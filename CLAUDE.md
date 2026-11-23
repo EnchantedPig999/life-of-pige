@@ -13,7 +13,7 @@ Personal daily-activity tracker for Cameron, built phone-first. Single self-cont
 - `firestore.rules`: database security rules, locked to the owner's UID only (paste into Firebase console → Firestore → Rules after any change)
 
 ## Look and feel
-- Calm futuristic dark theme, warm pink accent `#ff6f9f`, warm dark background `#0d0810`, glass-like cards
+- Calm futuristic dark theme, warm pink accent `#ff6f9f`, warm dark background `#0d0810`, glass-like cards, plus pastel tiles (`PAL`: mint `#a9d6c9`, pink `#ffb3cc`, yellow `#f6dc8d`, lilac `#cdbdf0`, peach `#ffc9a8`, sky `#a8d4f0`) with dark text. Chosen design: "style C" (hybrid of dark theme + pastel tiles)
 - Fonts: Orbitron (headings, numbers) + Rajdhani (body), from Google Fonts
 - Colors with meaning: orange `#ffb454` for streaks, gold `#ffd45e` for PRs, red-tint for the streak warning
 - Phone-first (iPhone, Safari). Safe-area padding is in place. Add to home screen from Safari (Share → Add to Home Screen); opens full-screen
@@ -39,31 +39,42 @@ Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bott
 
 Old `events` collection from the XP version is unused. The app seeds defaults once, when `grp`, `act`, `cfg` are all empty: Fitness (Run, Lift), Practice (Drums, Songwriting, Intentional Game), Learning (Reading), Vitality (Creatine, Water goal, Hit sleep goal), Work (empty). "Hit sleep goal" has `auto:"sleep"`. Creatine and Water goal have `nt:true`.
 
-## Views (top menu: Dashboard | PRs | Recap | Finance)
-**Dashboard** (two sub-tabs, `SUB` = "today" | "trends", buttons `data-sub`, class `.tb`)
-- *Today:* date navigator (log or fix any past day), progress ring (share of tasks done on the open date, gold at 100%, time logged), red "last day to save your streak" box, checklist, Mood card, Sleep and weight inputs
-- Checklist grouped by editable groups. Tap the box to mark done; "+ time" opens Hrs/Min. "Edit lists" lets you add, rename, move, delete groups and tasks (delete needs two taps) and toggle ⏱ time per task. Per-task streak badge with warning
-- Mood: 5 emoji faces (😫😕😐🙂😄, tap again to clear) plus an optional note (saves on blur; card skips re-render while the note is focused). Avg mood shows in Recap and in heatmap tooltips
-- *Trends:* 17-week heatmap (tapping a day opens it on Today), "Per activity" list with Week/Month toggle and ▲▼ vs the same number of days in the previous week/month (days done and time), "Streaks & consistency" table (current streak, best-ever streak, days done in the last 30), weight line graph (lbs). Tasks without time (`nt` or auto) get a compact row with days only
+## Views (bottom tab bar `#bnav`: Today | Trends | PRs | Recap | Finance; `VIEW` holds the current one)
+The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.pg`). Footer (signed in as, Back up, Restore, Sign out) sits under every tab.
+
+**Today**
+- "Today's progress" card: half-gauge (share of all tasks done on the open date, gold at 100%) with the day's mood face in the middle, tasks done and time logged under it. Date navigator in the card header (‹ date ›; tapping the date opens a date picker); "Back to today" when on another day
+- "How's today?" mood card: 5 emoji faces (😫😕😐🙂😄, tap again to clear) plus an optional note (saves on blur; skips re-render while the note is focused)
+- Red "last day to save your streak" box
+- Group tiles (pastel, one per group): done/total, top current streak in that group, progress bar, ⚠️ when a task in it is at risk. Tapping a tile selects it (`GSEL`) and the checklist shows only that group. "Edit lists" shows all groups for editing
+- Checklist: tap the box to mark done; "+ time" opens Hrs/Min. Edit lists: add, rename, move, delete groups and tasks (delete needs two taps), toggle ⏱ time per task. Per-task streak badge with warning
+- Sleep and weight: two small cards with input + Save
+- Month calendar (replaced the 17-week heatmap): `CM` = shown month, follows the open date; ‹ › change month; tap a day to open it
+
+**Trends**
+- Week/Month switch. Tiles: days active and time logged vs the same number of days last week/month
+- "Per activity" list with ▲▼ vs last period (days done and time). Tasks without time (`nt` or auto) get a compact row with days only
+- "Streaks & consistency" table: current streak, best-ever streak, days done in the last 30 (colored pill)
+- Weight line graph (lbs)
 
 **PRs**
-- Current PR cards at top (gold), log forms, log sorted by date with filters
+- Current PRs as pastel tiles (running: longest, time, pace; one tile per lift). "+ Log run / + Log lift" switch (`PRF`) shows one form at a time. Log sorted by date with All/Runs/Lifts filters
 - Runs log miles + min/sec. Lifts log movement, lbs, reps. Suggested movements: Pull ups, Push ups, Dumbbell bench press, Dumbbell curls, Lateral raises. Any other name works; names group case-insensitively
 - Run PRs: longest distance, longest time, fastest pace (only runs of 1 mi or more). Lift PR: heaviest weight, reps break ties (weight 0 means most reps wins)
 - Badges mark entries that were a PR when logged; 👑 marks the current record
 
 **Recap**
-- Week/Month toggle with arrows. Tiles: days active, check-offs, time logged, PRs hit, plus avg sleep, avg mood and weight change when data exists. Compares with the same number of days in the previous period. Lists PRs hit
+- Week/Month toggle with arrows. Pastel tiles: days active, check-offs, time logged, PRs hit, plus avg sleep, avg mood, weight change and best day (most check-offs) when data exists. Compares with the same number of days in the previous period. Lists PRs hit
 
 **Finance** (hidden behind a 🔒 Unhide button by default; re-locks when leaving the tab or reloading. This is not real security, no passcode)
 - Accounts are Assets or Debts. Monthly checkpoint: enter each account's balance for a chosen month; empty boxes keep the previous value (carry-forward)
-- Net worth = assets minus debts, with a line graph by month. Savings goals link to an asset account or a manual amount, with progress bars (gold at 100%). Amounts are always shown once unhidden
+- Net worth tile (big), Assets and Debts tiles, line graph by month. 🔒 Hide button in the page header; the Finance tab icon shows 🔒/🔓. Savings goals link to an asset account or a manual amount, with progress bars (gold at 100%). Amounts are always shown once unhidden
 
 ## Rules and decisions (keep these)
 - **Best streak:** longest chain ever under the same GAP rule (past chains count first to last done day; the current one counts through today)
 - **Streak:** alive if done at least once every 3 days (`GAP=3`). A streak ends after 3 full days with nothing. The number counts days elapsed from the first day of the chain through today. Warning when the task was not done today, yesterday, or the day before
 - **Hit sleep goal:** checks itself when logged sleep for that date is 8+ hours (`GOAL=8`), cannot be tapped manually
-- **Heatmap colors** by share of all tasks done that day: under 20% red `#e5484d`, up to 40% yellow `#e9dc4a`, up to 60% green `#3fb96b`, over 60% 🔥. Blank if none. Number shown in each square except 🔥. Legend is deliberately short so it fits the box
+- **Calendar colors** by share of all tasks done that day: under 20% faint pink, up to 40% medium pink, up to 60% solid pink `#ff6f9f`, over 60% gold `#ffd45e`. Blank if none. Dashed outline = the open date
 - Creatine and Water goal have no time tracking
 
 ## Removed on purpose (do not re-add unless asked)
@@ -75,7 +86,8 @@ XP, levels, skills, quick-log chips and duration scaling, PR progress graphs, Re
 
 ## Implementation notes
 - Re-rendering on snapshots would wipe typed input, so the Finance checkpoint skips re-render while one of its inputs is focused
-- Tab/filter buttons use class `.tb`; the Week/Month toggle on the dashboard uses `.dp`. Don't mix them (a global toggle on `.dp` would clear the tab state)
+- Tab/filter buttons use class `.tb`; the Week/Month toggle on Trends uses `.dp`. Don't mix them. Segmented switches are `.seg` wrappers around those buttons
+- Elements with a CSS `display` rule need an explicit `[hidden]{display:none}` (see `#bnav`)
 - Delete buttons use an `ARM` variable for tap-twice confirmation; ids are prefixed per kind (`a`, `g`, `p`, `c`, `q`)
 
 ## Ideas not built

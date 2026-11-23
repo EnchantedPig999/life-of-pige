@@ -61,23 +61,53 @@ button.ghost,.ic,.dp,.tb{background:none;border:1px solid var(--line);color:var(
 .pc{background:linear-gradient(160deg,rgba(245,197,66,.10),var(--card) 60%);border:1px solid rgba(245,197,66,.5);border-radius:12px;padding:10px 12px;box-shadow:0 0 16px -8px rgba(245,197,66,.6)}
 .pc span{display:block;font-size:12px;color:var(--mut);letter-spacing:1px}.pc b{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:16px;color:#ffd45e;margin:3px 0;text-shadow:0 0 10px rgba(245,197,66,.35)}.pc small{color:var(--mut);font-size:12px}
 .le{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid var(--line);align-items:center}.le .d{color:var(--mut);font-size:12px}.le.pr{border-left:3px solid #f5c542;padding-left:10px;background:linear-gradient(90deg,rgba(245,197,66,.08),transparent)}
-.bd{display:inline-block;font-size:11px;font-weight:700;border:1px solid rgba(245,197,66,.6);background:rgba(245,197,66,.12);color:#ffd45e;border-radius:10px;padding:1px 7px;margin-left:6px;white-space:nowrap}
+.bd{display:inline-block;font-size:11px;font-weight:700;border:1px solid #ffd45e;background:#ffd45e;color:#1a0d14;border-radius:10px;padding:1px 7px;margin-left:6px;white-space:nowrap}
 .tg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
 .tl{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.tl span{display:block;font-size:12px;color:var(--mut);letter-spacing:1px}.tl b{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:20px;color:var(--ac);margin:3px 0}.tl small{color:var(--mut);font-size:12px}
 .up{color:#7be3a4;font-weight:700}.dn{color:#ff9aa8;font-weight:700}
 .fr{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}.fr label{flex:1}.fr input[type=number]{width:140px;text-align:right}
 .gb{height:12px;background:rgba(255,160,200,.14);border-radius:8px;overflow:hidden;margin:8px 0 4px}.gb i{display:block;height:100%;background:var(--ac);border-radius:8px}
 svg{width:100%;height:auto;display:block}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#1c0f1a;border:1px solid var(--ac);padding:9px 16px;border-radius:18px;font-size:14px;display:none;z-index:9}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:#1c0f1a;border:1px solid var(--ac);padding:9px 16px;border-radius:18px;font-size:14px;display:none;z-index:9}
 #msg{text-align:center;color:var(--mut);padding:30px}
 .rg{display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0 2px}.rg svg{width:84px;height:84px;flex:0 0 84px}.rg b{font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:17px;letter-spacing:1px}
 .mf{flex:1;font-size:26px;line-height:1;background:none;border:1px solid var(--line);border-radius:10px;padding:8px 0;cursor:pointer;filter:grayscale(1);opacity:.5}.mf.on{filter:none;opacity:1;border-color:var(--ac);background:rgba(255,111,159,.15)}
 textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:rgba(16,7,13,.85);color:var(--tx);resize:vertical}textarea:focus{outline:none;border-color:var(--ac)}
 .cs{display:grid;grid-template-columns:1fr 58px 58px 58px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:15px}.cs span{text-align:right}.cs.h{border-top:0;color:var(--mut);font-size:12px;padding-top:0}
 #auth{max-width:380px;margin:24px auto}#auth input{width:100%;margin-bottom:8px}
-.foot{text-align:center;margin:30px 0 10px;line-height:2}.foot .x{font-size:13px}
+.foot{text-align:center;margin:30px 0 10px;line-height:2}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+/* Bottom tab bar */
+#bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));width:calc(100% - 24px);max-width:520px;background:rgba(29,16,26,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,160,200,.2);border-radius:22px;display:flex;justify-content:space-around;padding:8px 4px;z-index:8;box-shadow:0 10px 30px rgba(0,0,0,.5)}#bnav[hidden]{display:none}
+#bnav button{background:none;border:0;color:var(--mut);font-family:inherit;font-weight:600;font-size:12px;min-width:56px;padding:2px 0;cursor:pointer}
+#bnav button i{display:block;font-style:normal;font-size:20px;filter:grayscale(1);opacity:.7;margin-bottom:2px}
+#bnav button.on{color:var(--ac)}#bnav button.on i{filter:none;opacity:1}#bnav button.on::after{content:"";display:block;width:18px;height:3px;border-radius:2px;background:var(--ac);margin:3px auto 0}
+.pg{font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:20px;letter-spacing:3px;margin:8px 0 14px}
+/* Segmented switch (Week/Month etc.) */
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;color:var(--mut);border-radius:10px;padding:8px 0;font-size:15px}.seg button.on{background:var(--ac);color:#1a0610}
+/* Pastel tiles */
+.g2,.tg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.t{display:block;width:100%;min-width:0;text-align:left;border:0;font-family:inherit;font-weight:600;border-radius:20px;padding:13px;color:#1a0d14;position:relative;min-height:96px;cursor:pointer}div.t{cursor:default}
+.t .tl2{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:10px;letter-spacing:2px;font-weight:700;opacity:.75;text-transform:uppercase;padding-right:32px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t b{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:22px;margin-top:10px}.t small{display:block;font-size:13px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t .ar{position:absolute;right:10px;top:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:14px}
+.t .tl2.wr{white-space:normal;line-height:1.35}.t.sel{outline:3px solid var(--tx);outline-offset:2px}.t .up,.t .dn{color:inherit}.t+.tg{margin-top:10px}
+.t .bp{display:block;height:6px;background:rgba(0,0,0,.15);border-radius:4px;margin-top:8px;overflow:hidden}.t .bp i{display:block;height:100%;background:#1a0d14;border-radius:4px}
+.g3 .t{min-height:0;padding:12px 10px}.g3 .t .tl2{padding-right:0}.g3 .t b{font-size:16px;margin-top:8px}
+/* Today gauge + date */
+.gh2{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:14px}
+.dnav{display:flex;align-items:center;gap:4px}.ic.sm2{padding:3px 10px}.dl{position:relative;color:var(--tx);padding:0 4px;white-space:nowrap}.dl input{position:absolute;inset:0;opacity:0;width:100%;height:100%;padding:0}
+.gw{position:relative;max-width:260px;margin:6px auto 0}.gw svg{width:100%;height:auto}.gf{position:absolute;left:0;right:0;top:27%;font-size:24px;text-align:center}.gv{position:absolute;left:0;right:0;top:53%;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-weight:700;font-size:30px;text-align:center}
+.gl{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:-2px}
+.grp .act:first-child{border-top:0}.card>.ar:first-child{border-top:0}#streaks .warn{margin:0 0 10px}
+.m0{margin:0}#sh,#wh{flex:1;width:0}
+/* Month calendar */
+#cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 2px;text-align:center}#cal .w{font-size:11px;color:var(--mut)}
+#cal .d{width:36px;height:36px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:0;background:none;color:var(--tx);font-family:inherit;font-weight:600;padding:0;cursor:pointer}
+#cal .l1{background:rgba(255,111,159,.15)}#cal .l2{background:rgba(255,111,159,.35)}#cal .l3{background:#ff6f9f;color:#1a0610}#cal .l4{background:#ffd45e;color:#1a0610}#cal .fut{color:#5a4651;cursor:default}#cal .td{outline:1.5px dashed var(--ac);outline-offset:2px}.foot .x{font-size:13px}
 </style></head><body><div class="wrap">
-<div class="title">LIFE OF PIGE</div><div class="tag">// DAILY TRACKER</div>
+<div id="brand"><div class="title">LIFE OF PIGE</div><div class="tag">// DAILY TRACKER</div></div>
 <div id="msg">Loading…</div>
 <div id="auth" class="card" hidden>
 <div class="lab">Sign in</div>
@@ -86,51 +116,53 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="row" style="margin-top:4px"><button class="go" id="asin">Sign in</button><button class="x" id="arst">Forgot password</button></div>
 <div id="aerr" class="sm mut" style="margin-top:10px"></div></div>
 <div id="app" hidden>
-<div class="row" style="justify-content:center;margin-bottom:12px"><button class="tb on" data-view="home">Dashboard</button><button class="tb" data-view="prs">PRs</button><button class="tb" data-view="recap">Recap</button><button class="tb" data-view="fin">Finance</button></div>
-<div id="home">
-<div class="row" style="justify-content:center;margin-bottom:12px"><button class="tb" data-sub="today">Today</button><button class="tb" data-sub="trends">Trends</button></div>
 <div id="today">
-<div class="nav"><button class="ic" id="prev">‹</button><input type="date" id="dt"><button class="ic" id="next">›</button><button class="ic" id="tdy">Today</button></div>
-<div id="ring"></div>
-<div id="streaks"></div>
-<div class="hd"><h3>Checklist</h3><button class="ghost" id="edit">Edit lists</button></div>
-<div id="list"></div>
-<div class="hd"><h3>Mood</h3></div>
+<div class="card"><div class="gh2"><span>Today's progress</span><span class="dnav"><button class="ic sm2" id="prev">‹</button><label class="dl"><span id="dtl"></span><input type="date" id="dt" aria-label="Pick a date"></label><button class="ic sm2" id="next">›</button></span></div><div id="ring"></div><div style="text-align:center"><button class="ghost" id="tdy" hidden style="margin-top:8px">Back to today</button></div></div>
 <div class="card" id="mood"></div>
+<div id="streaks"></div>
+<div class="g2" id="gtiles"></div>
+<div class="hd"><h3 id="clh">Checklist</h3><button class="ghost" id="edit">Edit lists</button></div>
+<div id="list"></div>
 <div class="hd"><h3>Sleep &amp; weight</h3></div>
-<div class="card"><div class="row"><input id="sh" type="number" step="0.25" min="0" max="16" placeholder="Sleep hrs"><button class="go" id="sb">Save</button><span id="sn" class="mut sm"></span></div>
-<div class="row" style="margin-top:8px"><input id="wh" type="number" step="0.1" min="0" placeholder="Weight lbs"><button class="go" id="wb">Save</button><span id="wn" class="mut sm"></span></div></div>
+<div class="g2"><div class="card m0"><div class="lab">Sleep (hrs)</div><div class="row" style="flex-wrap:nowrap"><input id="sh" type="number" step="0.25" min="0" max="16" placeholder="Hrs"><button class="go" id="sb">Save</button></div><div id="sn" class="sm mut" style="margin-top:6px"></div></div>
+<div class="card m0"><div class="lab">Weight (lbs)</div><div class="row" style="flex-wrap:nowrap"><input id="wh" type="number" step="0.1" min="0" placeholder="Lbs"><button class="go" id="wb">Save</button></div><div id="wn" class="sm mut" style="margin-top:6px"></div></div></div>
+<div class="hd"><h3 id="cml">Month</h3><div class="row"><button class="ic sm2" data-cm="-1">‹</button><button class="ic sm2" data-cm="1">›</button></div></div>
+<div class="card"><div id="cal"></div><div class="row sm mut" style="justify-content:center;margin-top:12px;gap:10px;white-space:nowrap"><span><span class="lgb" style="background:rgba(255,111,159,.15)"></span> &lt;20%</span><span><span class="lgb" style="background:rgba(255,111,159,.35)"></span> ≤40%</span><span><span class="lgb" style="background:#ff6f9f"></span> ≤60%</span><span><span class="lgb" style="background:#ffd45e"></span> &gt;60%</span></div></div>
 </div>
 <div id="trends" hidden>
-<div class="card"><div class="lab">Active days (tap a day to open it)</div><div id="heat"></div><div class="row sm mut" style="margin-top:10px;gap:8px;align-items:center;white-space:nowrap"><span><span class="lgb" style="background:#e5484d"></span> &lt;20%</span><span><span class="lgb" style="background:#e9dc4a"></span> ≤40%</span><span><span class="lgb" style="background:#3fb96b"></span> ≤60%</span><span>🔥 &gt;60%</span><span>· # = tasks</span></div></div>
-<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:4px"><div class="lab" style="margin:0">Per activity <span class="sm">· ▲▼ vs last <span id="perl">week</span></span></div><div class="row"><button class="dp" data-per="week">Week</button><button class="dp" data-per="month">Month</button></div></div><div id="stats"></div></div>
-
-<div class="card"><div class="lab">Streaks &amp; consistency</div><div id="cons"></div></div>
-<div class="card"><div class="lab">Weight</div><div id="wc"></div></div>
+<div class="pg">TRENDS</div>
+<div class="seg"><button class="dp" data-per="week">Week</button><button class="dp" data-per="month">Month</button></div>
+<div class="g2" id="ttiles"></div>
+<div class="hd"><h3>Per activity</h3><span class="sm mut">▲▼ vs last <span id="perl">week</span></span></div>
+<div class="card" id="stats"></div>
+<div class="hd"><h3>Streaks &amp; consistency</h3></div><div class="card"><div id="cons"></div></div>
+<div class="hd"><h3>Weight</h3></div><div class="card"><div id="wc"></div></div>
 </div>
+<div id="prs" hidden>
+<div class="pg">PERSONAL RECORDS</div>
+<div id="prc"></div>
+<div class="seg" style="margin-top:6px"><button class="tb" data-prf="run">+ Log run</button><button class="tb" data-prf="lift">+ Log lift</button></div>
+<div class="card" id="frun"><div class="row"><input id="rdist" type="number" step="0.01" min="0" placeholder="Miles" style="flex:1"><input id="rm" type="number" min="0" placeholder="Min" style="width:70px"><input id="rs" type="number" min="0" max="59" placeholder="Sec" style="width:70px"></div><div class="row" style="margin-top:10px;justify-content:space-between"><input id="rd" type="date"><button class="go" id="rsave">Save run</button></div></div>
+<div class="card" id="flift" hidden><div class="row"><input id="ln" list="lnl" placeholder="Movement" style="flex:1;min-width:150px"><datalist id="lnl"></datalist></div><div class="row" style="margin-top:8px"><input id="lw" type="number" step="0.5" min="0" placeholder="Lbs" style="flex:1"><input id="lr" type="number" min="1" placeholder="Reps" style="flex:1"></div><div class="row" style="margin-top:10px;justify-content:space-between"><input id="ld" type="date"><button class="go" id="lsave">Save lift</button></div><div class="mut sm" style="margin-top:6px">Pull ups: leave lbs blank, or enter added weight.</div></div>
+<div class="hd"><h3>Log</h3><div class="row"><button class="tb" data-pf="all">All</button><button class="tb" data-pf="runs">Runs</button><button class="tb" data-pf="lifts">Lifts</button></div></div>
+<div class="card" id="plog"></div>
 </div>
+<div id="recap" hidden>
+<div class="pg">RECAP</div>
+<div class="seg"><button class="tb" data-rv="week">Week</button><button class="tb" data-rv="month">Month</button></div>
+<div class="nav" style="margin-bottom:12px"><button class="ic" data-rn="-1">‹</button><b id="rl" style="min-width:170px;text-align:center"></b><button class="ic" data-rn="1" id="rnx">›</button></div>
+<div id="rc"></div></div>
 <div id="fin" hidden>
+<div class="row" style="justify-content:space-between"><div class="pg">FINANCE</div><button class="ghost" id="fhide" hidden>🔒 Hide</button></div>
 <div class="card" id="flock" style="text-align:center;padding:26px 12px"><div style="font-size:30px">🔒</div><div class="mut" style="margin:6px 0 14px">Finance is hidden</div><button class="go" id="funhide">Unhide</button></div>
 <div id="fbody" hidden>
-<div class="row" style="justify-content:flex-end;margin-bottom:6px"><button class="ghost" id="fhide">🔒 Hide</button></div>
 <div id="fnw"></div>
 <div class="hd"><h3>📅 Monthly checkpoint</h3><button class="ghost" id="fedit">Edit accounts &amp; goals</button></div>
 <div class="card" id="fchk"></div>
 <div class="hd"><h3>🎯 Savings goals</h3></div><div id="fgoals"></div></div></div>
-<div id="recap" hidden>
-<div class="row" style="justify-content:center;margin-bottom:10px"><button class="tb" data-rv="week">Week</button><button class="tb" data-rv="month">Month</button></div>
-<div class="nav"><button class="ic" data-rn="-1">‹</button><b id="rl" style="min-width:170px;text-align:center"></b><button class="ic" data-rn="1" id="rnx">›</button></div>
-<div id="rc"></div></div>
-<div id="prs" hidden>
-<div class="hd"><h3>🏆 Current PRs</h3></div><div id="prc"></div>
-<div class="hd"><h3>🏃 Log a run</h3></div>
-<div class="card"><div class="row"><input id="rd" type="date"><input id="rdist" type="number" step="0.01" min="0" placeholder="Miles"><input id="rm" type="number" min="0" placeholder="Min"><input id="rs" type="number" min="0" max="59" placeholder="Sec"><button class="go" id="rsave">Save</button></div></div>
-<div class="hd"><h3>🏋️ Log a lift</h3></div>
-<div class="card"><div class="row"><input id="ln" list="lnl" placeholder="Movement" style="flex:1;min-width:150px"><datalist id="lnl"></datalist><input id="lw" type="number" step="0.5" min="0" placeholder="Lbs"><input id="lr" type="number" min="1" placeholder="Reps"><input id="ld" type="date"><button class="go" id="lsave">Save</button></div><div class="mut sm" style="margin-top:6px">Pull ups: leave lbs blank, or enter added weight.</div></div>
-<div class="hd"><h3>📜 Log</h3><div class="row"><button class="tb" data-pf="all">All</button><button class="tb" data-pf="runs">Runs</button><button class="tb" data-pf="lifts">Lifts</button></div></div>
-<div class="card" id="plog"></div></div>
 <div class="foot sm mut"><span id="who"></span><br><button class="x" id="bk">Back up</button> · <button class="x" id="rsb">Restore</button> · <button class="x" id="so">Sign out</button><input type="file" id="rsf" accept="application/json,.json" hidden></div>
 </div></div>
+<nav id="bnav" hidden><button data-view="today"><i>🏠</i>Today</button><button data-view="trends"><i>📈</i>Trends</button><button data-view="prs"><i>🏆</i>PRs</button><button data-view="recap"><i>🗓️</i>Recap</button><button data-view="fin"><i id="fico">🔒</i>Finance</button></nav>
 <div id="toast"></div>
 <script>
 const GOAL=8;
@@ -143,11 +175,11 @@ const fs=s=>{s=Math.round(s);return Math.floor(s/60)+":"+z(s%60)};
 const ft=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return (h?h+":"+z(m):m)+":"+z(s%60)};
 const mi=x=>(+x.toFixed(2))+" mi";
 const fmt=m=>m>=60?Math.floor(m/60)+"h"+(m%60?" "+m%60+"m":""):m+"m";
-let VIEW="home",PR=[],PF="all",RV="week",RO=0,AC=[],BAL=[],GL=[],FE=false,FH=true,FM=today().slice(0,7);
+let VIEW="today",PR=[],PF="all",RV="week",RO=0,AC=[],BAL=[],GL=[],FE=false,FH=true,FM=today().slice(0,7);
 let G=[],A=[],L=new Map(),SL={},WT=[],CF=[],D=today(),EDIT=false,OPEN=null,ARM=null,PER="week",seen={},seeded=false,C={},tt;
 // Storage collection names (internal key -> stored name). Used for backup/restore.
 const PATH={grp:"grp",act:"act",log:"log",cfg:"cfg",sl:"sleep",wt:"weight",pr:"pr",acct:"acct",bal:"bal",goal:"goal",mood:"mood"},RAW={};
-let SUB="today",MD={};const FACES=["😫","😕","😐","🙂","😄"];
+let MD={},GSEL=null,CM=null,CD=null,PRF="run";const PAL=["#a9d6c9","#ffb3cc","#f6dc8d","#cdbdf0","#ffc9a8","#a8d4f0"];const FACES=["😫","😕","😐","🙂","😄"];
 const done=(a,d)=>a.auto==="sleep"?(SL[d]!=null&&SL[d]>=GOAL):L.has(d+"_"+a.id);
 const mins=(a,d)=>(L.get(d+"_"+a.id)||{}).mins||0;
 const risk=a=>{const T=today();return streak(a)>0&&!done(a,T)&&!done(a,addD(T,-1))&&!done(a,addD(T,-2))};
@@ -161,9 +193,10 @@ const k=streak(a);
 h+=`<span class="nm">${esc(a.name)}${au?`<small>auto · ${SL[D]!=null?SL[D]+"h":"no sleep logged"} / ${GOAL}h</small>`:""}</span>${k>0?`<span class="stk${risk(a)?" w":""}">${risk(a)?"⚠️ last day · ":""}🔥 ${k} day${k===1?"":"s"}</span>`:""}${au||a.nt?"":`<button class="tm" data-tm="${a.id}">${m?fmt(m):"+ time"}</button>`}</div>`;
 if(OPEN===a.id&&!au&&!a.nt)h+=`<div class="row te"><input id="h_${a.id}" type="number" min="0" placeholder="Hrs" value="${m>=60?Math.floor(m/60):""}"><input id="m_${a.id}" type="number" min="0" placeholder="Min" value="${m%60||""}"><button class="go" data-set="${a.id}">Save</button></div>`;
 return h};
-function list(){let h="";
-G.forEach(g=>{const as=A.filter(a=>a.g===g.id);
-h+=`<div class="grp"><div class="gh">${EDIT?`<input class="gn" data-rg="${g.id}" value="${esc(g.name)}"><button class="x" data-delgrp="${g.id}">${ARM==="g"+g.id?"Tap again":"✕"}</button>`:`<span>${esc(g.name)}</span>`}</div>`+as.map(row).join("");
+function list(){let h="";const sg=G.find(g=>g.id===GSEL);
+$("clh").textContent=EDIT?"Edit lists":"Checklist"+(sg?" · "+sg.name:"");
+(EDIT?G:G.filter(g=>g.id===GSEL)).forEach(g=>{const as=A.filter(a=>a.g===g.id);
+h+=`<div class="grp">${EDIT?`<div class="gh"><input class="gn" data-rg="${g.id}" value="${esc(g.name)}"><button class="x" data-delgrp="${g.id}">${ARM==="g"+g.id?"Tap again":"✕"}</button></div>`:""}`+as.map(row).join("");
 if(!as.length&&!EDIT)h+=`<div class="mut sm">No tasks yet. Tap Edit lists to add some.</div>`;
 if(EDIT)h+=`<div class="row" style="margin-top:8px"><input placeholder="New task" style="flex:1"><button class="go" data-addact="${g.id}">Add</button></div>`;
 h+="</div>"});
@@ -179,10 +212,6 @@ let g="";for(let k=0;k<4;k++){const y=lo+(hi-lo)*k/3;g+=`<line x1="${pl}" x2="${
 $("wc").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}<polyline points="${w.map((x,i)=>X(i).toFixed(1)+","+Y(x.lbs).toFixed(1)).join(" ")}" fill="none" stroke="#ff6f9f" stroke-width="2.5"/>${w.map((x,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(x.lbs).toFixed(1)}" r="3.5" fill="#ff6f9f"/>`).join("")}<text x="${pl}" y="${H-6}" font-size="11" fill="var(--mut)">${w[0].id}</text><text x="${W-pr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--mut)">${w[w.length-1].id}</text></svg>`;
 const dl=v[v.length-1]-v[0];$("wn").textContent=(tw?"Saved: "+tw.lbs+" lbs":"")+(w.length>1?(tw?" · ":"")+"Change: "+(dl>0?"+":"")+dl.toFixed(1)+" lbs":"")}
 function trends(){const T=today(),tot=A.length||1;
-const W=17,st=addD(mon(T),-7*(W-1));let h="";
-for(let i=0;i<W*7;i++){const d=addD(st,i);if(d>T){h+=`<i class="hc" style="visibility:hidden"></i>`;continue}
-const c=A.filter(a=>done(a,d)).length,lv=!c?0:c/tot>.6?4:c/tot>.4?3:c/tot>=.2?2:1,bg=["rgba(255,160,200,.08)","#e5484d","#e9dc4a","#3fb96b","rgba(255,120,40,.18)"][lv];h+=`<i class="hc${d===D?" sel":""}" data-day="${d}" title="${d}: ${c}/${A.length}${MD[d]&&MD[d].m?" · "+FACES[MD[d].m-1]:""}" style="background:${bg};color:${lv===1?"#fff":"#10130a"}${lv===4?";font-size:12px":""}">${lv===4?"🔥":c||""}</i>`}
-$("heat").innerHTML=h;
 const s0=PER==="week"?mon(T):T.slice(0,8)+"01",el=Math.round((pd(T)-pd(s0))/864e5);
 // previous period: same number of days, starting at the start of last week / last month (capped at that month's end)
 let p0,p1;if(PER==="week"){p0=addD(s0,-7);p1=addD(T,-7)}else{const t=pd(s0);p0=iso(new Date(t.getFullYear(),t.getMonth()-1,1));const pe=addD(s0,-1);p1=addD(p0,el);if(p1>pe)p1=pe}
@@ -190,6 +219,9 @@ const tally=(a,x,y)=>{let m=0,n=0;for(let d=x;d<=y;d=addD(d,1)){m+=mins(a,d);if(
 const rs=A.map(a=>{const c=tally(a,s0,T),q=tally(a,p0,p1);return{a,m:c.m,n:c.n,pm:q.m,pn:q.n}});
 const dv=(x,y,f)=>x===y?'<span class="mut">same</span>':`<span class="${x>y?"up":"dn"}">${x>y?"▲":"▼"} ${f(Math.abs(x-y))}</span>`,dd=x=>x+" day"+(x===1?"":"s");
 const m2=Math.max(...rs.map(r=>r.m),1);
+let ca=0,pa=0;for(let d=s0;d<=T;d=addD(d,1))if(A.some(a=>done(a,d)))ca++;for(let d=p0;d<=p1;d=addD(d,1))if(A.some(a=>done(a,d)))pa++;
+const tsum=rs.reduce((x,r)=>x+r.m,0),psum=rs.reduce((x,r)=>x+r.pm,0),tdl=(x,y,f)=>x===y?"same as last "+PER:(x>y?"▲ ":"▼ ")+f(Math.abs(x-y))+" vs last "+PER;
+$("ttiles").innerHTML=`<div class="t" style="background:${PAL[0]}"><span class="tl2">Days active</span><b>${ca} / ${el+1}</b><small>${tdl(ca,pa,x=>x)}</small></div><div class="t" style="background:${PAL[1]}"><span class="tl2">Time logged</span><b>${fmt(tsum)}</b><small>${tdl(tsum,psum,fmt)}</small></div>`;
 $("perl").textContent=PER;
 $("stats").innerHTML=rs.length?rs.map(r=>r.a.nt||r.a.auto?`<div class="ar" style="grid-template-columns:1fr auto"><div>${esc(r.a.name)}<small>${r.n||r.pn?dv(r.n,r.pn,dd):"&nbsp;"}</small></div><div class="tv">${dd(r.n)}</div></div>`:`<div class="ar"><div>${esc(r.a.name)}<small>${dd(r.n)}${r.n!==r.pn?" "+dv(r.n,r.pn,x=>x):""}${r.m||r.pm?" · time "+dv(r.m,r.pm,fmt):""}</small></div><div class="bar"><i style="width:${r.m/m2*100}%"></i></div><div class="tv">${fmt(r.m)}</div></div>`).join(""):"<div class='mut sm'>Add activities to see stats.</div>";
 // Streaks & consistency: current, best ever, days done in the last 30
@@ -198,7 +230,7 @@ const best=a=>{const ds=(a.auto==="sleep"?Object.keys(SL).filter(k=>SL[k]>=GOAL)
 for(const d of ds){if(l&&Math.round((pd(d)-pd(l))/864e5)>GAP){b=Math.max(b,Math.round((pd(l)-pd(f))/864e5)+1);f=d}if(!f)f=d;l=d}
 if(f)b=Math.max(b,Math.round((pd(l)-pd(f))/864e5)+1);return Math.max(b,streak(a))};
 const c30=a=>{let n=0;for(let i=0;i<30;i++)if(done(a,addD(T,-i)))n++;return n};
-$("cons").innerHTML=A.length?`<div class="cs h"><div></div><span>Now</span><span>Best</span><span>30 days</span></div>`+A.map(a=>{const k=streak(a),b=best(a),n=c30(a);return`<div class="cs"><div>${esc(a.name)}</div><span style="color:#ffb454">${k?"🔥 "+k:'<span class="mut">–</span>'}</span><span style="color:${b&&b===k?"#ffd45e":"var(--tx)"}">${b||'<span class="mut">–</span>'}</span><span>${n}/30</span></div>`}).join("")+`<div class="mut sm" style="margin-top:8px">Best = longest streak ever (gold when you're on it now). 30 days = days done in the last 30.</div>`:"<div class='mut sm'>Add activities to see streaks.</div>";
+$("cons").innerHTML=A.length?`<div class="cs h"><div></div><span>Now</span><span>Best</span><span>30 days</span></div>`+A.map(a=>{const k=streak(a),b=best(a),n=c30(a);return`<div class="cs"><div>${esc(a.name)}</div><span style="color:#ffb454">${k?"🔥 "+k:'<span class="mut">–</span>'}</span><span style="color:${b&&b===k?"#ffd45e":"var(--tx)"}">${b||'<span class="mut">–</span>'}</span><span><span class="bd" style="margin:0;background:${n>=15?PAL[0]:n>=6?PAL[2]:PAL[1]};border-color:transparent;font-size:13px">${n}/30</span></span></div>`}).join("")+`<div class="mut sm" style="margin-top:8px">Best = longest streak ever (gold when you're on it now). 30 days = days done in the last 30.</div>`:"<div class='mut sm'>Add activities to see streaks.</div>";
 const rk=A.map(a=>({a,k:streak(a)})).filter(x=>x.k>0&&risk(x.a)).sort((x,y)=>y.k-x.k);
 $("streaks").innerHTML=rk.length?`<div class="warn"><b>⚠️ Last day to save your streak${rk.length>1?"s":""}!</b><div class="sm mut">${rk.map(x=>esc(x.a.name)+" (🔥 "+x.k+")").join(", ")}. Do it today or the streak is lost.</div></div>`:"";
 document.querySelectorAll(".dp").forEach(b=>b.classList.toggle("on",b.dataset.per===PER))}
@@ -216,10 +248,10 @@ function fin(){
 const thisM=today().slice(0,7),ms=[...new Set(BAL.map(x=>x.m))].sort(),end=ms.length?(ms[ms.length-1]>thisM?ms[ms.length-1]:thisM):thisM;
 const bal=(a,m)=>{let r=null;BAL.forEach(x=>{if(x.acct===a&&x.m<=m&&(!r||x.m>r.m))r=x});return r?r.amt:null};
 const nw=m=>{let t=0,any=false;AC.forEach(a=>{const b=bal(a.id,m);if(b!=null){any=true;t+=a.kind==="debt"?-b:b}});return any?t:null};
-const tile=(l,v,sm)=>`<div class="tl"><span>${l}</span><b>${v}</b><small>${sm}</small></div>`;
+let ti=0;const tile=(l,v,sm)=>`<div class="t" style="background:${PAL[ti++%4]}"><span class="tl2">${l}</span><b>${v}</b><small>${sm}</small></div>`;
 let h="";
 if(ms.length){const cur=nw(end),pv=nw(addM(end,-1));let as=0,db=0;AC.forEach(a=>{const b=bal(a.id,end)||0;if(a.kind==="debt")db+=b;else as+=b});
-h+=`<div class="tg">`+tile("Net worth",usd(cur==null?0:cur),pv==null||cur==null?fmo(end):`<span class="${cur>=pv?"up":"dn"}">${cur>=pv?"▲":"▼"} ${usd(Math.abs(cur-pv))}</span> vs last month`)+tile("Assets",usd(as),"as of "+fmo(end))+tile("Debts",usd(db),"as of "+fmo(end))+`</div>`;
+h+=tile("Net worth",usd(cur==null?0:cur),pv==null||cur==null?fmo(end):`<span class="${cur>=pv?"up":"dn"}">${cur>=pv?"▲":"▼"} ${usd(Math.abs(cur-pv))}</span> vs last month`)+`<div class="tg">`+tile("Assets",usd(as),"as of "+fmo(end))+tile("Debts",usd(db),"as of "+fmo(end))+`</div>`;
 const pts=[];for(let m=ms[0];m<=end;m=addM(m,1)){const v=nw(m);if(v!=null)pts.push({m,v})}
 if(pts.length)h+=`<div class="card"><div class="lab">Net worth over time</div>${nwChart(pts)}</div>`}
 $("fnw").innerHTML=h;
@@ -247,13 +279,15 @@ const cap=e>T?T:e;
 const stat=(a0,a1)=>{const r={n:0,act:0,chk:0,m:0,per:{}};A.forEach(a=>r.per[a.id]={d:0,m:0});for(let d=a0;d<=a1;d=addD(d,1)){r.n++;let c=0;A.forEach(a=>{if(done(a,d)){c++;r.per[a.id].d++;const m=mins(a,d);r.per[a.id].m+=m;r.m+=m}});if(c){r.act++;r.chk+=c}}return r};
 const cu=stat(s,cap),pv=stat(ps,addD(ps,cu.n-1));
 const dl=(a,b,f=x=>x)=>a===b?"same as "+pl:`<span class="${a>b?"up":"dn"}">${a>b?"▲":"▼"} ${f(Math.abs(a-b))}</span> vs ${pl}`;
-const tile=(l,v,sm)=>`<div class="tl"><span>${l}</span><b>${v}</b><small>${sm}</small></div>`;
+let ti=0;const tile=(l,v,sm)=>`<div class="t" style="background:${PAL[ti++%4]}"><span class="tl2">${l}</span><b>${v}</b><small>${sm}</small></div>`;
 const {fl}=prCalc(),hit=PR.filter(x=>x.date>=s&&x.date<=cap&&(fl[x.id]||[]).length).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.ts-a.ts);
 let t=tile("Days active",cu.act+" / "+cu.n,dl(cu.act,pv.act))+tile("Check-offs",cu.chk,dl(cu.chk,pv.chk))+tile("Time logged",fmt(cu.m),dl(cu.m,pv.m,fmt))+tile("PRs hit","🏆 "+hit.length,hit.length?"this "+RV:"none yet this "+RV);
 const sv=Object.keys(SL).filter(k=>k>=s&&k<=cap).map(k=>SL[k]);
 if(sv.length)t+=tile("Avg sleep",(sv.reduce((a,b)=>a+b,0)/sv.length).toFixed(1)+" hrs",sv.length+" night"+(sv.length===1?"":"s")+" logged");
 const mv=Object.keys(MD).filter(k=>k>=s&&k<=cap&&MD[k].m).map(k=>MD[k].m);
 if(mv.length){const av=mv.reduce((a,b)=>a+b,0)/mv.length;t+=tile("Avg mood",FACES[Math.round(av)-1]+" "+av.toFixed(1),mv.length+" day"+(mv.length===1?"":"s")+" rated")}
+let bdy=null,bc=0;for(let d=s;d<=cap;d=addD(d,1)){const c=A.filter(a=>done(a,d)).length;if(c>bc){bc=c;bdy=d}}
+if(bdy)t+=tile("Best day",fd(bdy),pd(bdy).toLocaleString("en-US",{weekday:"long"})+" · "+bc+" of "+A.length+" done");
 const wv=WT.filter(x=>x.id>=s&&x.id<=cap&&x.lbs>0);
 if(wv.length>1){const df=wv[wv.length-1].lbs-wv[0].lbs;t+=tile("Weight",(df>0?"+":"")+df.toFixed(1)+" lbs",wv[0].lbs+" → "+wv[wv.length-1].lbs)}
 const pd2=x=>x.type==="run"?"🏃 Run "+mi(x.dist)+" · "+ft(x.secs):emj(x.name)+" "+esc(x.name)+" "+(x.w?x.w+" lbs × "+x.reps:x.reps+" reps");
@@ -270,26 +304,41 @@ fl[x.id]=f});return{br,bl,fl}}
 function prs(){const{br,bl,fl}=prCalc();
 const em=n=>{n=(n||"").toLowerCase();return n.includes("pull")?"🧗":n.includes("push")?"🤸":n.includes("curl")?"💪":n.includes("lateral")?"🙌":"🏋️"};
 const cur=new Set([br.d,br.t,br.p,...Object.values(bl)].filter(Boolean).map(x=>x.id));
-const cd=(e,t,v,s)=>`<div class="pc"><span>${e} ${t}</span><b>${v}</b><small>${s}</small></div>`;
-let c=`<div class="lab">🏃 Running</div><div class="prg">`+(br.d?cd("🏅","Longest run",mi(br.d.dist),ft(br.d.secs)+" · "+br.d.date)+cd("⏱️","Longest time",ft(br.t.secs),mi(br.t.dist)+" · "+br.t.date)+(br.p?cd("⚡","Fastest pace",fs(br.p.secs/br.p.dist)+" /mi",mi(br.p.dist)+" · "+br.p.date):""):"<div class='mut sm'>No runs logged yet.</div>")+`</div><div class="lab">🏋️ Lifts</div><div class="prg">`;
+const tile=(bg,l,v,sm)=>`<div class="t" style="background:${bg}"><span class="tl2 wr">${l}</span><b>${v}</b><small>${sm}</small></div>`;
+let c=`<div class="hd" style="margin-top:0"><h3>🏃 Running</h3></div>`+(br.d?`<div class="g3">`+tile(PAL[2],"Longest",mi(br.d.dist),fd(br.d.date))+tile(PAL[2],"Time",ft(br.t.secs),fd(br.t.date))+(br.p?tile(PAL[2],"Pace",fs(br.p.secs/br.p.dist),"/mi · "+fd(br.p.date)):tile(PAL[2],"Pace","–","runs of 1 mi+"))+`</div>`:"<div class='mut sm'>No runs logged yet.</div>");
 const ls=Object.values(bl).sort((a,b)=>a.name.localeCompare(b.name));
-c+=ls.length?ls.map(x=>cd(em(x.name),esc(x.name),x.w?x.w+" lbs × "+x.reps:x.reps+" reps",x.date)).join(""):"<div class='mut sm'>No lifts logged yet.</div>";
-const n=Object.values(fl).filter(f=>f.length).length;$("prc").innerHTML=(n?`<div class="sub" style="color:#ffd45e;margin:0 0 10px">🏆 ${n} PR${n===1?"":"s"} hit</div>`:"")+c+"</div>";
+c+=`<div class="hd"><h3>🏋️ Lifts</h3></div>`+(ls.length?`<div class="g2">`+ls.map((x,i)=>tile(PAL[i%PAL.length],esc(x.name),x.w?x.w+" × "+x.reps:x.reps+" reps",(x.w?"lbs · ":"")+em(x.name)+" "+fd(x.date))).join("")+`</div>`:"<div class='mut sm'>No lifts logged yet.</div>");
+const n=Object.values(fl).filter(f=>f.length).length;$("prc").innerHTML=c+(n?`<div class="sub" style="color:#ffd45e;margin:0 0 6px">🏆 ${n} PR${n===1?"":"s"} hit all-time</div>`:"");
 const names=[...new Set(["Pull ups","Push ups","Dumbbell bench press","Dumbbell curls","Lateral raises",...PR.filter(x=>x.type==="lift").map(x=>x.name)])];
 $("lnl").innerHTML=names.map(n=>`<option value="${esc(n)}">`).join("");
 const rows=PR.filter(x=>PF==="all"||(PF==="runs"?x.type==="run":x.type==="lift")).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.ts-a.ts);
 $("plog").innerHTML=rows.length?rows.map(x=>`<div class="le${(fl[x.id]||[]).length?" pr":""}"><div><b>${x.type==="run"?"🏃 Run":em(x.name)+" "+esc(x.name)}</b> ${x.type==="run"?mi(x.dist)+" · "+ft(x.secs)+" · "+fs(x.secs/x.dist)+" /mi":(x.w?x.w+" lbs × "+x.reps:x.reps+" reps")}${(fl[x.id]||[]).map(b=>`<span class="bd">🏆 ${b}</span>`).join("")}${cur.has(x.id)?'<span class="bd">👑</span>':""}<div class="d">${x.date}</div></div><button class="x" data-delpr="${x.id}">${ARM==="p"+x.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Nothing logged yet.</div>";
 document.querySelectorAll("[data-pf]").forEach(b=>b.classList.toggle("on",b.dataset.pf===PF))}
-function ring(){const n=A.filter(a=>done(a,D)).length,t=A.length,m=A.reduce((s,a)=>s+mins(a,D),0),p=t?n/t:0,R=34,c=2*Math.PI*R,full=t>0&&n===t,col=full?"#ffd45e":"#ff6f9f";
-$("ring").innerHTML=`<div class="rg"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="${R}" fill="none" stroke="rgba(255,160,200,.14)" stroke-width="8"/>${p>0?`<circle cx="42" cy="42" r="${R}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(p*c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 42 42)"/>`:""}<text x="42" y="48" text-anchor="middle" font-family="Orbitron,Arial" font-weight="700" font-size="16" fill="${col}">${Math.round(p*100)}%</text></svg><div><b style="color:${col}">${n} / ${t} done</b><div class="mut sm">${m?fmt(m)+" logged":"No time logged"} · ${D===today()?"today":fd(D)}</div>${full?'<div class="sm" style="color:#ffd45e">🎉 Everything done!</div>':""}</div></div>`}
+function ring(){const n=A.filter(a=>done(a,D)).length,t=A.length,m=A.reduce((s,a)=>s+mins(a,D),0),p=t?n/t:0,L=345.6,full=t>0&&n===t,col=full?"#ffd45e":"#ff6f9f",mf=MD[D]&&MD[D].m?FACES[MD[D].m-1]:"";
+$("dtl").textContent=D===today()?"Today":pd(D).toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric"});$("tdy").hidden=D===today();
+$("ring").innerHTML=`<div class="gw"><svg viewBox="0 0 260 140"><path d="M20 130 A110 110 0 0 1 240 130" fill="none" stroke="rgba(255,160,200,.14)" stroke-width="20"/>${p>0?`<path d="M20 130 A110 110 0 0 1 240 130" fill="none" stroke="${col}" stroke-width="20" stroke-dasharray="${(p*L).toFixed(1)} 400" style="filter:drop-shadow(0 0 8px ${full?"rgba(255,212,94,.6)":"rgba(255,111,159,.6)"})"/>`:""}</svg><div class="gf">${mf}</div><div class="gv" style="color:${full?col:"var(--tx)"}">${Math.round(p*100)}%</div></div><div class="gl"><span>0</span><span>${n} of ${t} tasks${m?" · "+fmt(m)+" logged":""}${full?" · 🎉":""}</span><span>${t}</span></div>`}
+// Group tiles: tap one to show only that group's checklist
+function tiles(){if(!G.find(g=>g.id===GSEL))GSEL=G.length?G[0].id:null;
+$("gtiles").innerHTML=G.map((g,i)=>{const as=A.filter(a=>a.g===g.id),n=as.filter(a=>done(a,D)).length,top=as.map(a=>({a,k:streak(a)})).sort((x,y)=>y.k-x.k)[0],w=as.some(risk);
+return`<button class="t${g.id===GSEL?" sel":""}" data-gsel="${g.id}" style="background:${PAL[i%PAL.length]}"><span class="ar">${w?"⚠️":"↗"}</span><span class="tl2">${esc(g.name)}</span><b>${n}/${as.length}</b><small>${top&&top.k?"🔥 "+top.k+" "+esc(top.a.name):"No streak yet"}</small><span class="bp"><i style="width:${as.length?n/as.length*100:0}%"></i></span></button>`}).join("")}
+// Month calendar (replaces the heatmap). Color = share of all tasks done that day
+function cal(){if(D!==CD){CD=D;CM=D.slice(0,7)}const[y,mo]=CM.split("-").map(Number),first=new Date(y,mo-1,1),off=(first.getDay()+6)%7,days=new Date(y,mo,0).getDate(),T=today(),tot=A.length||1;
+$("cml").textContent=first.toLocaleString("en-US",{month:"long",year:"numeric"});
+let h=["M","T","W","T","F","S","S"].map(x=>`<div class="w">${x}</div>`).join("")+"<div></div>".repeat(off);
+for(let i=1;i<=days;i++){const d=CM+"-"+z(i);if(d>T){h+=`<div class="d fut">${i}</div>`;continue}
+const c=A.filter(a=>done(a,d)).length,lv=!c?0:c/tot>.6?4:c/tot>.4?3:c/tot>=.2?2:1;h+=`<button class="d l${lv}${d===D?" td":""}" data-day="${d}" title="${c}/${A.length}${MD[d]&&MD[d].m?" · "+FACES[MD[d].m-1]:""}">${i}</button>`}
+$("cal").innerHTML=h}
 function moodCard(){const ae=document.activeElement;if($("mood").contains(ae)&&ae.tagName==="TEXTAREA")return;const x=MD[D]||{};
-$("mood").innerHTML=`<div class="row" style="flex-wrap:nowrap">${FACES.map((f,i)=>`<button class="mf${x.m===i+1?" on":""}" data-mood="${i+1}" aria-label="Mood ${i+1} of 5">${f}</button>`).join("")}</div><textarea id="mnote" rows="2" placeholder="Note for the day (optional)">${esc(x.note||"")}</textarea>`}
+$("mood").innerHTML=`<div class="lab">How's today?</div><div class="row" style="flex-wrap:nowrap">${FACES.map((f,i)=>`<button class="mf${x.m===i+1?" on":""}" data-mood="${i+1}" aria-label="Mood ${i+1} of 5">${f}</button>`).join("")}</div><textarea id="mnote" rows="2" placeholder="Note for the day (optional)">${esc(x.note||"")}</textarea>`}
 // Save mood/note for the open date; removes the doc when both are empty
 const saveMood=(m,note)=>{const o={};if(m)o.m=m;if(note)o.note=note;wr(()=>Object.keys(o).length?C.mood.doc(D).set(o):(MD[D]?C.mood.doc(D).delete():null))};
 function render(){if(!seen.ready)return;$("dt").value=D;
-ring();moodCard();
-$("today").hidden=SUB!=="today";$("trends").hidden=SUB!=="trends";document.querySelectorAll("[data-sub]").forEach(b=>b.classList.toggle("on",b.dataset.sub===SUB));
-$("edit").textContent=EDIT?"Done":"Edit lists";list();sw();trends();prs();$("home").hidden=VIEW!=="home";$("prs").hidden=VIEW!=="prs";$("recap").hidden=VIEW!=="recap";if(VIEW==="recap")recap();$("fin").hidden=VIEW!=="fin";$("flock").hidden=!FH;$("fbody").hidden=FH;if(VIEW==="fin"&&!FH)fin();document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("on",b.dataset.view===VIEW));
+["today","trends","prs","recap","fin"].forEach(v=>$(v).hidden=VIEW!==v);$("brand").hidden=VIEW!=="today";
+document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("on",b.dataset.view===VIEW));$("fico").textContent=FH?"🔒":"🔓";
+tiles();ring();moodCard();cal();
+$("edit").textContent=EDIT?"Done":"Edit lists";list();sw();trends();prs();
+$("frun").hidden=PRF!=="run";$("flift").hidden=PRF!=="lift";document.querySelectorAll("[data-prf]").forEach(b=>b.classList.toggle("on",b.dataset.prf===PRF));
+if(VIEW==="recap")recap();$("flock").hidden=!FH;$("fbody").hidden=FH;$("fhide").hidden=FH;if(VIEW==="fin"&&!FH)fin();
 $("rsb").textContent=ARM==="restore"?"Tap again: replaces ALL data":"Restore"}
 async function seed(){await wr(async()=>{let o=0;for(let gi=0;gi<DEF.length;gi++){await C.grp.doc("g"+gi).set({name:DEF[gi][0],o:++o});for(let ai=0;ai<DEF[gi][1].length;ai++){const nm=DEF[gi][1][ai],x={name:nm,g:"g"+gi,o:++o};if(nm==="Hit sleep goal")x.auto="sleep";if(nm==="Creatine"||nm==="Water goal")x.nt=true;await C.act.doc("a"+gi+"_"+ai).set(x)}}await C.cfg.doc("seeded").set({v:1})})}
 const uid=()=>Date.now()+""+Math.floor(Math.random()*1000);
@@ -310,7 +359,9 @@ else if(t.id==="prev"||t.id==="next"){D=addD(D,t.id==="prev"?-1:1);render()}
 else if(t.id==="tdy"){D=today();render()}
 else if(t.id==="sb"){const h=parseFloat($("sh").value);if(!(h>=0))return toast("Enter hours");wr(async()=>{await C.sl.doc(D).set({hours:h});$("sh").value="";toast("Sleep saved")})}
 else if(t.id==="wb"){const h=parseFloat($("wh").value);if(!(h>0))return toast("Enter weight");wr(async()=>{await C.wt.doc(D).set({lbs:h});$("wh").value="";toast("Weight saved")})}
-else if(d.sub){SUB=d.sub;ARM=null;render();window.scrollTo(0,0)}
+else if(d.gsel){GSEL=d.gsel;OPEN=null;render()}
+else if(d.prf){PRF=d.prf;render()}
+else if(d.cm){CM=addM(CM,+d.cm);render()}
 else if(d.mood){const x=MD[D]||{},m=+d.mood;saveMood(x.m===m?0:m,x.note||"")}
 else if(d.view){VIEW=d.view;ARM=null;if(d.view!=="fin"){FH=true;FE=false}render();window.scrollTo(0,0)}
 else if(d.pf){PF=d.pf;render()}
@@ -327,7 +378,7 @@ else if(d.addacc){const v=$("na").value.trim();if(v)wr(()=>C.acct.doc("c"+uid())
 else if(d.addgoal){const v=$("ng").value.trim();if(v)wr(()=>C.goal.doc("q"+uid()).set({name:v,target:parseFloat($("nt").value)||0,acct:"",manual:0,o:Date.now()}))}
 else if(d.delacc||d.delgoal){const k=d.delacc?"c"+d.delacc:"q"+d.delgoal;if(ARM!==k){ARM=k;render();return}ARM=null;
 if(d.delgoal)wr(()=>C.goal.doc(d.delgoal).delete());else wr(async()=>{for(const b of BAL.filter(b=>b.acct===d.delacc))await C.bal.doc(b.id).delete();await C.acct.doc(d.delacc).delete()})}
-else if(d.day){D=d.day;SUB="today";render();window.scrollTo(0,0)}
+else if(d.day){D=d.day;VIEW="today";render();window.scrollTo(0,0)}
 else if(d.per){PER=d.per;render()}
 else if(d.tog){const k=D+"_"+d.tog;wr(()=>L.has(k)?C.log.doc(k).delete():C.log.doc(k).set({date:D,act:d.tog,mins:0}))}
 else if(d.nt){const a=A.find(x=>x.id===d.nt);if(a)wr(()=>C.act.doc(d.nt).update({nt:!a.nt}))}
@@ -361,7 +412,7 @@ const by=(a,b)=>(a.o||0)-(b.o||0),docs=s=>s.docs.map(d=>({id:d.id,...d.data()}))
 // Seed defaults only after the server confirms grp/act/cfg are all empty (never from an empty offline cache)
 const chk=()=>{if(seeded||!(seen.grp&&seen.act&&seen.cfg))return;seeded=true;if(!CF.length&&!G.length&&!A.length)seed()};
 const sub=(n,fn)=>C[n].onSnapshot(s=>{if(!s.changed&&(seen[n]||!s.fresh))return;const x=docs(s);RAW[n]=x;fn(x);if(s.fresh)seen[n]=1;chk();render()});
-$("msg").hidden=true;$("auth").hidden=true;$("app").hidden=false;seen.ready=1;$("rd").value=$("ld").value=today();
+$("msg").hidden=true;$("auth").hidden=true;$("app").hidden=false;$("bnav").hidden=false;seen.ready=1;$("rd").value=$("ld").value=today();
 sub("grp",x=>G=x.sort(by));sub("act",x=>A=x.sort(by));sub("cfg",x=>CF=x);
 sub("log",x=>L=new Map(x.map(y=>[y.id,y])));
 sub("sl",x=>{SL={};x.forEach(y=>SL[y.id]=y.hours)});
