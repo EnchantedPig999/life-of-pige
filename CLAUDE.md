@@ -97,7 +97,7 @@ XP, levels, skills, quick-log chips and duration scaling, PR progress graphs, Re
 - Re-rendering on snapshots would wipe typed input, so the Finance checkpoint skips re-render while one of its inputs is focused
 - Tab/filter buttons use class `.tb`; the Week/Month toggle on Trends uses `.dp`. Don't mix them. Segmented switches are `.seg` wrappers around those buttons
 - Elements with a CSS `display` rule need an explicit `[hidden]{display:none}` (see `#bnav`) and `.cols[hidden]`)
-- **Desktop layout** lives only in `@media (min-width:1000px)` at the end of the CSS: bottom bar becomes a left sidebar (brand via `#bnav::before`, `#brand` hidden), and `.cols`/`.col` wrappers become grid columns (Today = 3 columns, Trends/PRs/Finance = 2, Recap tiles = 4 across). On phones the wrappers are plain blocks, so the phone look is unchanged. Rule: desktop tweaks must not change the phone view; check by comparing 390px-wide screenshots before/after
+- **Desktop layout** lives only in `@media (min-width:1000px)` at the end of the CSS: bottom bar becomes a left sidebar (brand via `#bnav::before`, `#brand` hidden; sidebar + content are centered as one block, and short pages are centered vertically), and `.cols`/`.col` wrappers become grid columns (Today = 3 columns, Trends/PRs/Finance = 2, Recap tiles = 4 across). On phones the wrappers are plain blocks, so the phone look is unchanged. Rule: desktop tweaks must not change the phone view; check by comparing 390px-wide screenshots before/after
 - Delete buttons use an `ARM` variable for tap-twice confirmation; ids are prefixed per kind (`a`, `g`, `p`, `c`, `q`)
 
 ## Ideas not built
