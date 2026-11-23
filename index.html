@@ -76,10 +76,10 @@ svg{width:100%;height:auto;display:block}
 <div class="title">LIFE OF PIGE</div><div class="tag">// DAILY TRACKER</div>
 <div id="msg">Loading…</div>
 <div id="auth" class="card" hidden>
-<div class="lab">Sign in to sync your data</div>
+<div class="lab">Sign in</div>
 <input id="ae" type="email" autocomplete="username" placeholder="Email">
 <input id="ap" type="password" autocomplete="current-password" placeholder="Password">
-<div class="row" style="margin-top:4px"><button class="go" id="asin">Sign in</button><button class="ghost" id="aup">Create account</button><button class="x" id="arst">Forgot password</button></div>
+<div class="row" style="margin-top:4px"><button class="go" id="asin">Sign in</button><button class="x" id="arst">Forgot password</button></div>
 <div id="aerr" class="sm mut" style="margin-top:10px"></div></div>
 <div id="app" hidden>
 <div class="row" style="justify-content:center;margin-bottom:12px"><button class="tb on" data-view="home">Dashboard</button><button class="tb" data-view="prs">PRs</button><button class="tb" data-view="recap">Recap</button><button class="tb" data-view="fin">Finance</button></div>
@@ -370,7 +370,6 @@ const msgs={"auth/invalid-credential":"Wrong email or password.","auth/wrong-pas
 const err=e=>{$("aerr").textContent=msgs[e&&e.code]||"Something went wrong ("+(e&&e.code||e)+")."};
 const creds=()=>[$("ae").value.trim(),$("ap").value];
 $("asin").onclick=()=>{const[e,p]=creds();$("aerr").textContent="Signing in…";au.signInWithEmailAndPassword(auth,e,p).catch(err)};
-$("aup").onclick=()=>{const[e,p]=creds();$("aerr").textContent="Creating account…";au.createUserWithEmailAndPassword(auth,e,p).catch(err)};
 $("arst").onclick=()=>{const[e]=creds();if(!e)return $("aerr").textContent="Enter your email first.";au.sendPasswordResetEmail(auth,e).then(()=>$("aerr").textContent="Reset email sent.").catch(err)};
 $("ap").addEventListener("keydown",e=>{if(e.key==="Enter")$("asin").click()});
 au.onAuthStateChanged(auth,u=>{

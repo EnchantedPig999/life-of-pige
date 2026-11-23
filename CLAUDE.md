@@ -10,7 +10,7 @@ Personal daily-activity tracker for Cameron, built phone-first. Single self-cont
 ## Files
 - `index.html`: the whole app (source of truth). The Firebase web config sits in the `<script type="module">` at the bottom
 - `icon-180.png`, `icon-512.png`: home-screen icons (pig snout on pink gradient); `manifest.webmanifest` makes it open full-screen from the home screen
-- `firestore.rules`: database security rules (paste into Firebase console → Firestore → Rules)
+- `firestore.rules`: database security rules, locked to the owner's UID only (paste into Firebase console → Firestore → Rules after any change)
 
 ## Look and feel
 - Calm futuristic dark theme, warm pink accent `#ff6f9f`, warm dark background `#0d0810`, glass-like cards
@@ -21,7 +21,7 @@ Personal daily-activity tracker for Cameron, built phone-first. Single self-cont
 - User prefers short responses
 
 ## Storage layer
-Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bottom of `index.html`. Email/password auth; Firestore with offline cache. Data lives at `users/<uid>/<collection>/<docId>`. The module calls `startApp(col, email)`; `col(name)` returns an object with `.doc(id).set/update/delete` and `.onSnapshot(cb)`, where `cb` gets `{docs:[{id,data()}], fresh, changed}`. Seeding only happens once the server (not the offline cache) confirms `grp`, `act`, `cfg` are empty. Footer has Back up (downloads JSON of all collections) and Restore (two taps; replaces all data with a backup file). Backup format: `{app:"life-of-pige", v:1, exported, data:{<collection>:[{id,...fields}]}}`.
+Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bottom of `index.html`. Email/password auth (sign-up is turned off in Firebase and there is no Create account button; single user only); Firestore with offline cache. Data lives at `users/<uid>/<collection>/<docId>`. The module calls `startApp(col, email)`; `col(name)` returns an object with `.doc(id).set/update/delete` and `.onSnapshot(cb)`, where `cb` gets `{docs:[{id,data()}], fresh, changed}`. Seeding only happens once the server (not the offline cache) confirms `grp`, `act`, `cfg` are empty. Footer has Back up (downloads JSON of all collections) and Restore (two taps; replaces all data with a backup file). Backup format: `{app:"life-of-pige", v:1, exported, data:{<collection>:[{id,...fields}]}}`.
 
 | Collection | Doc id | Fields |
 |---|---|---|
