@@ -349,7 +349,9 @@ const V="10.12.2",B="https://www.gstatic.com/firebasejs/"+V+"/";
 let fa,au,fs;
 try{[fa,au,fs]=await Promise.all([import(B+"firebase-app.js"),import(B+"firebase-auth.js"),import(B+"firebase-firestore.js")])}
 catch(e){$("msg").textContent="Couldn’t load. Check your connection and reopen.";throw e}
-const app=fa.initializeApp(FIREBASE_CONFIG),auth=au.getAuth(app);
+const app=fa.initializeApp(FIREBASE_CONFIG);
+// Keep the sign-in saved on the device (IndexedDB, with localStorage as a fallback for iOS home-screen apps)
+let auth;try{auth=au.initializeAuth(app,{persistence:[au.indexedDBLocalPersistence,au.browserLocalPersistence]})}catch(e){auth=au.getAuth(app)}
 let db;try{db=fs.initializeFirestore(app,{localCache:fs.persistentLocalCache({tabManager:fs.persistentMultipleTabManager()})})}catch(e){db=fs.getFirestore(app)}
 let started=false;
 const col=uid=>name=>{const ref=fs.collection(db,"users",uid,name);return{
