@@ -72,7 +72,10 @@ const streak = a => { let d = TODAY, g = 0, f = null; if (!done(a, d)) d = addD(
 const risk = acts.map(a => ({ a, k: streak(a) })).filter(x => x.k > 0 && !done(x.a, TODAY) && !done(x.a, addD(TODAY, -1)) && !done(x.a, addD(TODAY, -2))).sort((x, y) => y.k - x.k);
 
 let msg = null;
-if (risk.length) msg = { title: `⚠️ Last day to save ${risk.length === 1 ? "your streak" : risk.length + " streaks"}`, body: risk.map(x => `${x.a.name} 🔥${x.k}`).join(", ") + ". Do it today or it resets.", url: SITE };
+// Keep it short: name at most 2 tasks, no streak counts
+const names = risk.map(x => x.a.name), more = names.length - 2;
+if (risk.length === 1) msg = { title: `🔥 ${names[0]} streak ends today`, body: "Tap to keep it going.", url: SITE };
+else if (risk.length) msg = { title: `🔥 ${risk.length} streaks end today`, body: (more > 0 ? `${names[0]}, ${names[1]} +${more} more` : `${names[0]} & ${names[1]}`) + ". Tap to keep them going.", url: SITE };
 else if (FORCE) msg = { title: "🐷 Reminders are working", body: "This is a test. You'll only get these when a streak is about to end.", url: SITE };
 if (!msg) { console.log("No streaks at risk today."); await patch("push", "main", { lastSent: TODAY }); process.exit(0); }
 
