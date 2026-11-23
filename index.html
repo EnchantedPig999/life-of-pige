@@ -106,6 +106,21 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 #cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 2px;text-align:center}#cal .w{font-size:11px;color:var(--mut)}
 #cal .d{width:36px;height:36px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:0;background:none;color:var(--tx);font-family:inherit;font-weight:600;padding:0;cursor:pointer}
 #cal .l1{background:rgba(255,111,159,.15)}#cal .l2{background:rgba(255,111,159,.35)}#cal .l3{background:#ff6f9f;color:#1a0610}#cal .l4{background:#ffd45e;color:#1a0610}#cal .fut{color:#5a4651;cursor:default}#cal .td{outline:1.5px dashed var(--ac);outline-offset:2px}.foot .x{font-size:13px}
+/* ---------- Desktop only (phones never match this) ---------- */
+@media (min-width:1000px){
+.wrap{max-width:none;margin:0;padding:28px 36px 40px 256px}#app,#auth,#msg{max-width:1200px}.cols[hidden]{display:none}
+#bnav{left:24px;top:24px;bottom:auto;transform:none;width:200px;max-width:none;flex-direction:column;justify-content:flex-start;gap:4px;padding:18px 10px;border-radius:20px}
+#bnav::before{content:"LIFE OF PIGE";font-family:Orbitron,Rajdhani,Arial,sans-serif;font-weight:700;letter-spacing:3px;color:var(--ac);font-size:14px;padding:4px 12px 16px}
+#bnav button{display:flex;align-items:center;gap:12px;text-align:left;font-size:16px;padding:10px 12px;border-radius:12px;min-width:0}
+#bnav button i{display:inline;margin:0;font-size:18px}#bnav button.on{background:rgba(255,111,159,.14)}#bnav button.on::after{display:none}#bnav button:hover{color:var(--tx)}
+body:has(#bnav:not([hidden])) #brand{display:none}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}.cols.c3{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr)}
+.col>:first-child,.col>.hd:first-child{margin-top:0}
+.pg{margin-top:0}#trends>.seg,#recap>.seg{max-width:360px}#ttiles{max-width:720px}
+#rc .tg{grid-template-columns:repeat(4,minmax(0,1fr))}
+.t[data-gsel]:hover{filter:brightness(1.05)}#cal .d:not(.fut):hover{outline:1px solid var(--ac)}
+#toast{bottom:24px}.foot{margin-top:40px}
+}
 </style></head><body><div class="wrap">
 <div id="brand"><div class="title">LIFE OF PIGE</div><div class="tag">// DAILY TRACKER</div></div>
 <div id="msg">Loading…</div>
@@ -116,13 +131,16 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="row" style="margin-top:4px"><button class="go" id="asin">Sign in</button><button class="x" id="arst">Forgot password</button></div>
 <div id="aerr" class="sm mut" style="margin-top:10px"></div></div>
 <div id="app" hidden>
-<div id="today">
+<div id="today" class="cols c3">
+<div class="col">
 <div class="card"><div class="gh2"><span>Today's progress</span><span class="dnav"><button class="ic sm2" id="prev">‹</button><label class="dl"><span id="dtl"></span><input type="date" id="dt" aria-label="Pick a date"></label><button class="ic sm2" id="next">›</button></span></div><div id="ring"></div><div style="text-align:center"><button class="ghost" id="tdy" hidden style="margin-top:8px">Back to today</button></div></div>
 <div class="card" id="mood"></div>
 <div id="streaks"></div>
+</div><div class="col">
 <div class="g2" id="gtiles"></div>
 <div class="hd"><h3 id="clh">Checklist</h3><button class="ghost" id="edit">Edit lists</button></div>
 <div id="list"></div>
+</div><div class="col">
 <div class="hd"><h3>Sleep &amp; weight</h3></div>
 <div class="g2"><div class="card m0"><div class="lab">Sleep (hrs)</div><div class="row" style="flex-wrap:nowrap"><input id="sh" type="number" step="0.25" min="0" max="16" placeholder="Hrs"><button class="go" id="sb">Save</button></div><div id="sn" class="sm mut" style="margin-top:6px"></div></div>
 <div class="card m0"><div class="lab">Weight (lbs)</div><div class="row" style="flex-wrap:nowrap"><input id="wh" type="number" step="0.1" min="0" placeholder="Lbs"><button class="go" id="wb">Save</button></div><div id="wn" class="sm mut" style="margin-top:6px"></div></div></div>
@@ -133,23 +151,28 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="row"><select id="remh"></select><button class="go" id="remon">Turn on</button><button class="ghost" id="remoff" hidden>Turn off</button></div>
 <div id="remmsg" class="sm mut" style="margin-top:8px"></div></div>
 </div>
+</div>
 <div id="trends" hidden>
 <div class="pg">TRENDS</div>
 <div class="seg"><button class="dp" data-per="week">Week</button><button class="dp" data-per="month">Month</button></div>
 <div class="g2" id="ttiles"></div>
+<div class="cols"><div class="col">
 <div class="hd"><h3>Per activity</h3><span class="sm mut">▲▼ vs last <span id="perl">week</span></span></div>
 <div class="card" id="stats"></div>
+</div><div class="col">
 <div class="hd"><h3>Streaks &amp; consistency</h3></div><div class="card"><div id="cons"></div></div>
 <div class="hd"><h3>Weight</h3></div><div class="card"><div id="wc"></div></div>
+</div></div>
 </div>
 <div id="prs" hidden>
 <div class="pg">PERSONAL RECORDS</div>
-<div id="prc"></div>
+<div class="cols"><div class="col"><div id="prc"></div></div><div class="col">
 <div class="seg" style="margin-top:6px"><button class="tb" data-prf="run">+ Log run</button><button class="tb" data-prf="lift">+ Log lift</button></div>
 <div class="card" id="frun"><div class="row"><input id="rdist" type="number" step="0.01" min="0" placeholder="Miles" style="flex:1"><input id="rm" type="number" min="0" placeholder="Min" style="width:70px"><input id="rs" type="number" min="0" max="59" placeholder="Sec" style="width:70px"></div><div class="row" style="margin-top:10px;justify-content:space-between"><input id="rd" type="date"><button class="go" id="rsave">Save run</button></div></div>
 <div class="card" id="flift" hidden><div class="row"><input id="ln" list="lnl" placeholder="Movement" style="flex:1;min-width:150px"><datalist id="lnl"></datalist></div><div class="row" style="margin-top:8px"><input id="lw" type="number" step="0.5" min="0" placeholder="Lbs" style="flex:1"><input id="lr" type="number" min="1" placeholder="Reps" style="flex:1"></div><div class="row" style="margin-top:10px;justify-content:space-between"><input id="ld" type="date"><button class="go" id="lsave">Save lift</button></div><div class="mut sm" style="margin-top:6px">Pull ups: leave lbs blank, or enter added weight.</div></div>
 <div class="hd"><h3>Log</h3><div class="row"><button class="tb" data-pf="all">All</button><button class="tb" data-pf="runs">Runs</button><button class="tb" data-pf="lifts">Lifts</button></div></div>
 <div class="card" id="plog"></div>
+</div></div>
 </div>
 <div id="recap" hidden>
 <div class="pg">RECAP</div>
@@ -160,10 +183,10 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="row" style="justify-content:space-between"><div class="pg">FINANCE</div><button class="ghost" id="fhide" hidden>🔒 Hide</button></div>
 <div class="card" id="flock" style="text-align:center;padding:26px 12px"><div style="font-size:30px">🔒</div><div class="mut" style="margin:6px 0 14px">Finance is hidden</div><button class="go" id="funhide">Unhide</button></div>
 <div id="fbody" hidden>
-<div id="fnw"></div>
+<div class="cols"><div class="col"><div id="fnw"></div></div><div class="col">
 <div class="hd"><h3>📅 Monthly checkpoint</h3><button class="ghost" id="fedit">Edit accounts &amp; goals</button></div>
 <div class="card" id="fchk"></div>
-<div class="hd"><h3>🎯 Savings goals</h3></div><div id="fgoals"></div></div></div>
+<div class="hd"><h3>🎯 Savings goals</h3></div><div id="fgoals"></div></div></div></div></div>
 <div class="foot sm mut"><span id="who"></span><br><button class="x" id="bk">Back up</button> · <button class="x" id="rsb">Restore</button> · <button class="x" id="so">Sign out</button><input type="file" id="rsf" accept="application/json,.json" hidden></div>
 </div></div>
 <nav id="bnav" hidden><button data-view="today"><i>🏠</i>Today</button><button data-view="trends"><i>📈</i>Trends</button><button data-view="prs"><i>🏆</i>PRs</button><button data-view="recap"><i>🗓️</i>Recap</button><button data-view="fin"><i id="fico">🔒</i>Finance</button></nav>
