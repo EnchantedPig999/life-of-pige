@@ -128,6 +128,10 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="card m0"><div class="lab">Weight (lbs)</div><div class="row" style="flex-wrap:nowrap"><input id="wh" type="number" step="0.1" min="0" placeholder="Lbs"><button class="go" id="wb">Save</button></div><div id="wn" class="sm mut" style="margin-top:6px"></div></div></div>
 <div class="hd"><h3 id="cml">Month</h3><div class="row"><button class="ic sm2" data-cm="-1">‹</button><button class="ic sm2" data-cm="1">›</button></div></div>
 <div class="card"><div id="cal"></div><div class="row sm mut" style="justify-content:center;margin-top:12px;gap:10px;white-space:nowrap"><span><span class="lgb" style="background:rgba(255,111,159,.15)"></span> &lt;20%</span><span><span class="lgb" style="background:rgba(255,111,159,.35)"></span> ≤40%</span><span><span class="lgb" style="background:#ff6f9f"></span> ≤60%</span><span><span class="lgb" style="background:#ffd45e"></span> &gt;60%</span></div></div>
+<div class="card" id="remp" style="margin-top:10px"><div class="row" style="justify-content:space-between"><div class="lab" style="margin:0">🔔 Streak reminders</div><span id="rems" class="sm mut"></span></div>
+<div class="sm mut" style="margin:6px 0 10px">A notification at this time, only on days a streak is about to end.</div>
+<div class="row"><select id="remh"></select><button class="go" id="remon">Turn on</button><button class="ghost" id="remoff" hidden>Turn off</button></div>
+<div id="remmsg" class="sm mut" style="margin-top:8px"></div></div>
 </div>
 <div id="trends" hidden>
 <div class="pg">TRENDS</div>
@@ -160,10 +164,6 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="hd"><h3>📅 Monthly checkpoint</h3><button class="ghost" id="fedit">Edit accounts &amp; goals</button></div>
 <div class="card" id="fchk"></div>
 <div class="hd"><h3>🎯 Savings goals</h3></div><div id="fgoals"></div></div></div>
-<div class="card" id="remp" style="margin-top:24px"><div class="row" style="justify-content:space-between"><div class="lab" style="margin:0">🔔 Streak reminders</div><span id="rems" class="sm mut"></span></div>
-<div class="sm mut" style="margin:6px 0 10px">A notification at this time, only on days a streak is about to end.</div>
-<div class="row"><select id="remh"></select><button class="go" id="remon">Turn on</button><button class="ghost" id="remoff" hidden>Turn off</button></div>
-<div id="remmsg" class="sm mut" style="margin-top:8px"></div></div>
 <div class="foot sm mut"><span id="who"></span><br><button class="x" id="bk">Back up</button> · <button class="x" id="rsb">Restore</button> · <button class="x" id="so">Sign out</button><input type="file" id="rsf" accept="application/json,.json" hidden></div>
 </div></div>
 <nav id="bnav" hidden><button data-view="today"><i>🏠</i>Today</button><button data-view="trends"><i>📈</i>Trends</button><button data-view="prs"><i>🏆</i>PRs</button><button data-view="recap"><i>🗓️</i>Recap</button><button data-view="fin"><i id="fico">🔒</i>Finance</button></nav>
