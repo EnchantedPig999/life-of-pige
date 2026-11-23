@@ -160,6 +160,10 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 <div class="hd"><h3>📅 Monthly checkpoint</h3><button class="ghost" id="fedit">Edit accounts &amp; goals</button></div>
 <div class="card" id="fchk"></div>
 <div class="hd"><h3>🎯 Savings goals</h3></div><div id="fgoals"></div></div></div>
+<div class="card" id="remp" style="margin-top:24px"><div class="row" style="justify-content:space-between"><div class="lab" style="margin:0">🔔 Streak reminders</div><span id="rems" class="sm mut"></span></div>
+<div class="sm mut" style="margin:6px 0 10px">A notification at this time, only on days a streak is about to end.</div>
+<div class="row"><select id="remh"></select><button class="go" id="remon">Turn on</button><button class="ghost" id="remoff" hidden>Turn off</button></div>
+<div id="remmsg" class="sm mut" style="margin-top:8px"></div></div>
 <div class="foot sm mut"><span id="who"></span><br><button class="x" id="bk">Back up</button> · <button class="x" id="rsb">Restore</button> · <button class="x" id="so">Sign out</button><input type="file" id="rsf" accept="application/json,.json" hidden></div>
 </div></div>
 <nav id="bnav" hidden><button data-view="today"><i>🏠</i>Today</button><button data-view="trends"><i>📈</i>Trends</button><button data-view="prs"><i>🏆</i>PRs</button><button data-view="recap"><i>🗓️</i>Recap</button><button data-view="fin"><i id="fico">🔒</i>Finance</button></nav>
@@ -342,6 +346,21 @@ if(VIEW==="recap")recap();$("flock").hidden=!FH;$("fbody").hidden=FH;$("fhide").
 $("rsb").textContent=ARM==="restore"?"Tap again: replaces ALL data":"Restore"}
 async function seed(){await wr(async()=>{let o=0;for(let gi=0;gi<DEF.length;gi++){await C.grp.doc("g"+gi).set({name:DEF[gi][0],o:++o});for(let ai=0;ai<DEF[gi][1].length;ai++){const nm=DEF[gi][1][ai],x={name:nm,g:"g"+gi,o:++o};if(nm==="Hit sleep goal")x.auto="sleep";if(nm==="Creatine"||nm==="Water goal")x.nt=true;await C.act.doc("a"+gi+"_"+ai).set(x)}}await C.cfg.doc("seeded").set({v:1})})}
 const uid=()=>Date.now()+""+Math.floor(Math.random()*1000);
+// ---- Streak reminders (Web Push). Sending happens in reminders/send.mjs on GitHub Actions ----
+const VAPID="BP4w0zttNnycXq95KCeWumhKqqUWrvvKiHYxTYZqjZVdY6m7ceo4FCs8dbzVdaoZIvRp7R84PPxIVbbwqQDA460";let PUSH=null;
+const b64u=s=>{const p="=".repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(r,c=>c.charCodeAt(0))};
+const hrl=h=>(h%12||12)+" "+(h<12?"AM":"PM");
+$("remh").innerHTML=Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}"${h===19?" selected":""}>${hrl(h)}</option>`).join("");
+function remUI(){const on=!!(PUSH&&PUSH.on);$("rems").textContent=on?"On · "+hrl(PUSH.hour??19):"Off";$("remon").hidden=on;$("remoff").hidden=!on;if(PUSH&&PUSH.hour!=null)$("remh").value=PUSH.hour}
+async function remOn(){const m=t=>$("remmsg").textContent=t;
+if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window))return m(navigator.standalone===false?"Open Life of Pige from its home-screen icon, then turn reminders on here.":"This browser can’t get notifications. On iPhone (iOS 16.4+), open the app from its home-screen icon.");
+try{const perm=await Notification.requestPermission();if(perm!=="granted")return m("Notifications are blocked. Allow them in iPhone Settings → Notifications → Life of Pige.");
+m("Turning on…");await navigator.serviceWorker.register("sw.js");const reg=await navigator.serviceWorker.ready;
+const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID)});
+await C.push.doc("main").set({on:true,sub:JSON.stringify(sub),tz:Intl.DateTimeFormat().resolvedOptions().timeZone,hour:+$("remh").value,lastSent:""});m("");toast("Reminders on")}
+catch(e){m("Couldn’t turn on reminders: "+(e.message||e))}}
+async function remOff(){try{const reg=await navigator.serviceWorker?.getRegistration();const sub=reg&&await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe()}catch(e){}
+wr(async()=>{await C.push.doc("main").update({on:false});toast("Reminders off")})}
 // Backup: download every collection as one JSON file
 function backup(){const data={};Object.keys(PATH).forEach(k=>data[PATH[k]]=RAW[k]||[]);
 const b=new Blob([JSON.stringify({app:"life-of-pige",v:1,exported:new Date().toISOString(),data},null,1)],{type:"application/json"});
@@ -353,6 +372,8 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,[data-day
 if(t.id!=="rsb"&&ARM==="restore"){ARM=null;render()}
 if(t.id==="edit"){EDIT=!EDIT;ARM=null;OPEN=null;render()}
 else if(t.id==="bk")backup()
+else if(t.id==="remon")remOn()
+else if(t.id==="remoff")remOff()
 else if(t.id==="rsb"){if(ARM!=="restore"){ARM="restore";render();return}ARM=null;render();$("rsf").click()}
 else if(t.id==="so")window.FB.signOut()
 else if(t.id==="prev"||t.id==="next"){D=addD(D,t.id==="prev"?-1:1);render()}
@@ -391,6 +412,7 @@ if(d.delact)wr(()=>C.act.doc(d.delact).delete());else wr(async()=>{for(const a o
 document.addEventListener("change",e=>{const t=e.target,d=t.dataset;
 if(t.id==="dt"){if(t.value){D=t.value;render()}}
 else if(t.id==="mnote"){const x=MD[D]||{},v=t.value.trim();if(v!==(x.note||""))saveMood(x.m||0,v)}
+else if(t.id==="remh"){if(PUSH&&PUSH.on)wr(async()=>{await C.push.doc("main").update({hour:+t.value});toast("Reminder time saved")})}
 else if(t.id==="rsf"){const f=t.files&&t.files[0];t.value="";if(f)restore(f)}
 else if(d.ren){const v=t.value.trim();if(v)wr(()=>C.act.doc(d.ren).update({name:v}))}
 else if(d.rg){const v=t.value.trim();if(v)wr(()=>C.grp.doc(d.rg).update({name:v}))}
@@ -417,6 +439,7 @@ sub("grp",x=>G=x.sort(by));sub("act",x=>A=x.sort(by));sub("cfg",x=>CF=x);
 sub("log",x=>L=new Map(x.map(y=>[y.id,y])));
 sub("sl",x=>{SL={};x.forEach(y=>SL[y.id]=y.hours)});
 sub("wt",x=>WT=x.sort((a,b)=>a.id<b.id?-1:1));sub("pr",x=>PR=x);sub("acct",x=>AC=x.sort(by));sub("bal",x=>BAL=x);sub("goal",x=>GL=x.sort(by));sub("mood",x=>{MD={};x.forEach(y=>MD[y.id]=y)});
+C.push=col("push");C.push.onSnapshot(s=>{const d=s.docs.find(y=>y.id==="main");PUSH=d?d.data():null;remUI()});
 render()}
 </script>
 <script type="module">

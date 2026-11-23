@@ -1,0 +1,41 @@
+name: Streak reminders
+
+on:
+  schedule:
+    - cron: "7 * * * *"   # hourly; the script only sends at the hour chosen in the app
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Send a test notification now"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  actions: write   # lets the keep-alive step re-enable this workflow
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-audit --no-fund
+        working-directory: reminders
+      - run: node send.mjs
+        working-directory: reminders
+        env:
+          FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+          VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
+          VAPID_PUBLIC: BP4w0zttNnycXq95KCeWumhKqqUWrvvKiHYxTYZqjZVdY6m7ceo4FCs8dbzVdaoZIvRp7R84PPxIVbbwqQDA460
+          OWNER_UID: RWBGSrZC5jVHXASmoC0L3MxrUIb2
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
+      # GitHub pauses scheduled workflows after 60 days without repo activity; re-enabling keeps it running.
+      - name: Keep alive
+        if: always()
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/reminders.yml/enable" || true
+        env:
+          GH_TOKEN: ${{ github.token }}

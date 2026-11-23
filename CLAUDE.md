@@ -10,6 +10,8 @@ Personal daily-activity tracker for Cameron, built phone-first. Single self-cont
 ## Files
 - `index.html`: the whole app (source of truth). The Firebase web config sits in the `<script type="module">` at the bottom
 - `icon-180.png`, `icon-512.png`: home-screen icons (pig snout on pink gradient); `manifest.webmanifest` makes it open full-screen from the home screen
+- `sw.js`: service worker, only shows push notifications (no caching)
+- `reminders/send.mjs` + `.github/workflows/reminders.yml`: streak reminders (see below)
 - `firestore.rules`: database security rules, locked to the owner's UID only (paste into Firebase console → Firestore → Rules after any change)
 
 ## Look and feel
@@ -38,6 +40,13 @@ Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bott
 | `mood` | `<date>` | optional `m` (1–5), optional `note` (doc deleted when both empty) |
 
 Old `events` collection from the XP version is unused. The app seeds defaults once, when `grp`, `act`, `cfg` are all empty: Fitness (Run, Lift), Practice (Drums, Songwriting, Intentional Game), Learning (Reading), Vitality (Creatine, Water goal, Hit sleep goal), Work (empty). "Hit sleep goal" has `auto:"sleep"`. Creatine and Water goal have `nt:true`.
+
+## Streak reminders (Web Push, no paid plan)
+- App: "🔔 Streak reminders" card above the footer. Turn on asks for notification permission (iPhone needs iOS 16.4+ and the app opened from the home-screen icon), subscribes with the public VAPID key and saves `users/<uid>/push/main` = `{on, sub (JSON string), tz, hour, lastSent}`. `push` is not part of Back up/Restore
+- GitHub Actions runs `reminders/send.mjs` hourly (minute 7). It reads Firestore with a service account, works out the local date/hour from `tz`, and once the hour is reached sends one notification if any streak is at risk (same rules as the app), then sets `lastSent`. Expired subscriptions (404/410) set `on:false`
+- Secrets in GitHub (Settings → Secrets → Actions): `FIREBASE_SA` (service account JSON), `VAPID_PRIVATE`. Public VAPID key and owner UID are in the workflow file and `index.html`
+- Manual test: Actions → Streak reminders → Run workflow (force = sends a test notification even if nothing is at risk)
+- A keep-alive step re-enables the workflow each run so GitHub doesn't pause it after 60 days
 
 ## Views (bottom tab bar `#bnav`: Today | Trends | PRs | Recap | Finance; `VIEW` holds the current one)
 The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.pg`). Footer (signed in as, Back up, Restore, Sign out) sits under every tab.
@@ -81,7 +90,7 @@ The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.p
 XP, levels, skills, quick-log chips and duration scaling, PR progress graphs, Recap "By activity" card, "time per week" chart and weekly table, a hide/show amounts toggle on Finance.
 
 ## Known limits
-- No push notifications; streak warnings only show when the app is opened
+- Reminders arrive up to ~30 min late (GitHub schedule delays)
 - The GitHub repo is public (needed for free GitHub Pages), so the code and this file are visible to anyone. Data is private behind sign-in and the Firestore rules
 
 ## Implementation notes
@@ -91,4 +100,4 @@ XP, levels, skills, quick-log chips and duration scaling, PR progress graphs, Re
 - Delete buttons use an `ARM` variable for tap-twice confirmation; ids are prefixed per kind (`a`, `g`, `p`, `c`, `q`)
 
 ## Ideas not built
-Nutrition tracking, streak reminder push notifications (possible for iPhone home-screen web apps but needs Firebase's pay-as-you-go plan; user declined for now), a PIN for Finance, logging a run on the PRs page also checking off "Run" on the dashboard.
+Nutrition tracking, a PIN for Finance, logging a run on the PRs page also checking off "Run" on the dashboard.
