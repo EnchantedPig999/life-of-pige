@@ -78,7 +78,11 @@ if (!msg) { console.log("No streaks at risk today."); await patch("push", "main"
 
 // ---- Send ----
 console.log("Message:", msg.title, "-", msg.body);
-webpush.setVapidDetails(SITE, process.env.VAPID_PUBLIC, process.env.VAPID_PRIVATE);
+// Secrets pasted into GitHub can pick up spaces, line breaks or quotes; keep only URL-safe base64 characters
+const clean = k => String(k || "").replace(/[^A-Za-z0-9_-]/g, "");
+const VPRIV = clean(process.env.VAPID_PRIVATE);
+if (VPRIV.length !== 43) { console.error(`VAPID_PRIVATE looks wrong (${VPRIV.length} characters after cleanup, expected 43). Re-paste it in GitHub secrets.`); process.exit(1); }
+webpush.setVapidDetails(SITE, clean(process.env.VAPID_PUBLIC), VPRIV);
 try {
   await webpush.sendNotification(JSON.parse(push.sub), JSON.stringify(msg), { TTL: 6 * 3600 });
   console.log("Sent:", msg.title);
