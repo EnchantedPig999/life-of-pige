@@ -35,16 +35,16 @@ Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bott
 | `acct` | `c<uid>` | `name`, `kind:"asset"|"debt"`, `o` |
 | `bal` | `<YYYY-MM>_<acctId>` | `m`, `acct`, `amt` |
 | `goal` | `q<uid>` | `name`, `target`, `acct` ("" = manual), `manual`, `o` |
+| `mood` | `<date>` | optional `m` (1–5), optional `note` (doc deleted when both empty) |
 
 Old `events` collection from the XP version is unused. The app seeds defaults once, when `grp`, `act`, `cfg` are all empty: Fitness (Run, Lift), Practice (Drums, Songwriting, Intentional Game), Learning (Reading), Vitality (Creatine, Water goal, Hit sleep goal), Work (empty). "Hit sleep goal" has `auto:"sleep"`. Creatine and Water goal have `nt:true`.
 
 ## Views (top menu: Dashboard | PRs | Recap | Finance)
-**Dashboard**
-- Date navigator (log or fix any past day), one entry per task per day
-- Checklist grouped by editable groups. Tap the box to mark done; "+ time" opens Hrs/Min. "Edit lists" lets you add, rename, move, delete groups and tasks (delete needs two taps) and toggle ⏱ time per task
-- Streak strip, plus a red "last day to save your streak" box and per-task warning
-- Sleep hours and weight inputs (saved for the open date) plus a weight line graph (lbs)
-- Trends: 17-week heatmap (tap a day to open it) and a "Per activity" list with Week/Month toggle. Tasks without time (`nt` or auto) get a compact row: name, streak, days done, no bar or timer
+**Dashboard** (two sub-tabs, `SUB` = "today" | "trends", buttons `data-sub`, class `.tb`)
+- *Today:* date navigator (log or fix any past day), progress ring (share of tasks done on the open date, gold at 100%, time logged), red "last day to save your streak" box, checklist, Mood card, Sleep and weight inputs
+- Checklist grouped by editable groups. Tap the box to mark done; "+ time" opens Hrs/Min. "Edit lists" lets you add, rename, move, delete groups and tasks (delete needs two taps) and toggle ⏱ time per task. Per-task streak badge with warning
+- Mood: 5 emoji faces (😫😕😐🙂😄, tap again to clear) plus an optional note (saves on blur; card skips re-render while the note is focused). Avg mood shows in Recap and in heatmap tooltips
+- *Trends:* 17-week heatmap (tapping a day opens it on Today), "Per activity" list with Week/Month toggle and ▲▼ vs the same number of days in the previous week/month (days done and time), "Streaks & consistency" table (current streak, best-ever streak, days done in the last 30), weight line graph (lbs). Tasks without time (`nt` or auto) get a compact row with days only
 
 **PRs**
 - Current PR cards at top (gold), log forms, log sorted by date with filters
@@ -53,13 +53,14 @@ Old `events` collection from the XP version is unused. The app seeds defaults on
 - Badges mark entries that were a PR when logged; 👑 marks the current record
 
 **Recap**
-- Week/Month toggle with arrows. Tiles: days active, check-offs, time logged, PRs hit, plus avg sleep and weight change when data exists. Compares with the same number of days in the previous period. Lists PRs hit
+- Week/Month toggle with arrows. Tiles: days active, check-offs, time logged, PRs hit, plus avg sleep, avg mood and weight change when data exists. Compares with the same number of days in the previous period. Lists PRs hit
 
 **Finance** (hidden behind a 🔒 Unhide button by default; re-locks when leaving the tab or reloading. This is not real security, no passcode)
 - Accounts are Assets or Debts. Monthly checkpoint: enter each account's balance for a chosen month; empty boxes keep the previous value (carry-forward)
 - Net worth = assets minus debts, with a line graph by month. Savings goals link to an asset account or a manual amount, with progress bars (gold at 100%). Amounts are always shown once unhidden
 
 ## Rules and decisions (keep these)
+- **Best streak:** longest chain ever under the same GAP rule (past chains count first to last done day; the current one counts through today)
 - **Streak:** alive if done at least once every 3 days (`GAP=3`). A streak ends after 3 full days with nothing. The number counts days elapsed from the first day of the chain through today. Warning when the task was not done today, yesterday, or the day before
 - **Hit sleep goal:** checks itself when logged sleep for that date is 8+ hours (`GOAL=8`), cannot be tapped manually
 - **Heatmap colors** by share of all tasks done that day: under 20% red `#e5484d`, up to 40% yellow `#e9dc4a`, up to 60% green `#3fb96b`, over 60% 🔥. Blank if none. Number shown in each square except 🔥. Legend is deliberately short so it fits the box
@@ -69,7 +70,7 @@ Old `events` collection from the XP version is unused. The app seeds defaults on
 XP, levels, skills, quick-log chips and duration scaling, PR progress graphs, Recap "By activity" card, "time per week" chart and weekly table, a hide/show amounts toggle on Finance.
 
 ## Known limits
-- No push notifications (the page can't send them); streak warnings only show when the app is opened
+- No push notifications; streak warnings only show when the app is opened
 - The GitHub repo is public (needed for free GitHub Pages), so the code and this file are visible to anyone. Data is private behind sign-in and the Firestore rules
 
 ## Implementation notes
@@ -78,4 +79,4 @@ XP, levels, skills, quick-log chips and duration scaling, PR progress graphs, Re
 - Delete buttons use an `ARM` variable for tap-twice confirmation; ids are prefixed per kind (`a`, `g`, `p`, `c`, `q`)
 
 ## Ideas not built
-Consistency score and longest-ever streaks, "vs last week" comparisons on the dashboard, progress ring for today, mood or journal notes, nutrition tracking, a PIN for Finance, logging a run on the PRs page also checking off "Run" on the dashboard.
+Nutrition tracking, streak reminder push notifications (possible for iPhone home-screen web apps but needs Firebase's pay-as-you-go plan; user declined for now), a PIN for Finance, logging a run on the PRs page also checking off "Run" on the dashboard.

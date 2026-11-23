@@ -70,6 +70,10 @@ button.ghost,.ic,.dp,.tb{background:none;border:1px solid var(--line);color:var(
 svg{width:100%;height:auto;display:block}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#1c0f1a;border:1px solid var(--ac);padding:9px 16px;border-radius:18px;font-size:14px;display:none;z-index:9}
 #msg{text-align:center;color:var(--mut);padding:30px}
+.rg{display:flex;align-items:center;justify-content:center;gap:16px;margin:12px 0 2px}.rg svg{width:84px;height:84px;flex:0 0 84px}.rg b{font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:17px;letter-spacing:1px}
+.mf{flex:1;font-size:26px;line-height:1;background:none;border:1px solid var(--line);border-radius:10px;padding:8px 0;cursor:pointer;filter:grayscale(1);opacity:.5}.mf.on{filter:none;opacity:1;border-color:var(--ac);background:rgba(255,111,159,.15)}
+textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:rgba(16,7,13,.85);color:var(--tx);resize:vertical}textarea:focus{outline:none;border-color:var(--ac)}
+.cs{display:grid;grid-template-columns:1fr 58px 58px 58px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:15px}.cs span{text-align:right}.cs.h{border-top:0;color:var(--mut);font-size:12px;padding-top:0}
 #auth{max-width:380px;margin:24px auto}#auth input{width:100%;margin-bottom:8px}
 .foot{text-align:center;margin:30px 0 10px;line-height:2}.foot .x{font-size:13px}
 </style></head><body><div class="wrap">
@@ -84,17 +88,26 @@ svg{width:100%;height:auto;display:block}
 <div id="app" hidden>
 <div class="row" style="justify-content:center;margin-bottom:12px"><button class="tb on" data-view="home">Dashboard</button><button class="tb" data-view="prs">PRs</button><button class="tb" data-view="recap">Recap</button><button class="tb" data-view="fin">Finance</button></div>
 <div id="home">
+<div class="row" style="justify-content:center;margin-bottom:12px"><button class="tb" data-sub="today">Today</button><button class="tb" data-sub="trends">Trends</button></div>
+<div id="today">
 <div class="nav"><button class="ic" id="prev">‹</button><input type="date" id="dt"><button class="ic" id="next">›</button><button class="ic" id="tdy">Today</button></div>
-<div class="sub" id="sum"></div>
+<div id="ring"></div>
 <div id="streaks"></div>
 <div class="hd"><h3>Checklist</h3><button class="ghost" id="edit">Edit lists</button></div>
 <div id="list"></div>
+<div class="hd"><h3>Mood</h3></div>
+<div class="card" id="mood"></div>
 <div class="hd"><h3>Sleep &amp; weight</h3></div>
 <div class="card"><div class="row"><input id="sh" type="number" step="0.25" min="0" max="16" placeholder="Sleep hrs"><button class="go" id="sb">Save</button><span id="sn" class="mut sm"></span></div>
-<div class="row" style="margin-top:8px"><input id="wh" type="number" step="0.1" min="0" placeholder="Weight lbs"><button class="go" id="wb">Save</button><span id="wn" class="mut sm"></span></div><div id="wc"></div></div>
-<div class="hd"><h3>Trends</h3></div>
+<div class="row" style="margin-top:8px"><input id="wh" type="number" step="0.1" min="0" placeholder="Weight lbs"><button class="go" id="wb">Save</button><span id="wn" class="mut sm"></span></div></div>
+</div>
+<div id="trends" hidden>
 <div class="card"><div class="lab">Active days (tap a day to open it)</div><div id="heat"></div><div class="row sm mut" style="margin-top:10px;gap:8px;align-items:center;white-space:nowrap"><span><span class="lgb" style="background:#e5484d"></span> &lt;20%</span><span><span class="lgb" style="background:#e9dc4a"></span> ≤40%</span><span><span class="lgb" style="background:#3fb96b"></span> ≤60%</span><span>🔥 &gt;60%</span><span>· # = tasks</span></div></div>
-<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:4px"><div class="lab" style="margin:0">Per activity</div><div class="row"><button class="dp" data-per="week">Week</button><button class="dp" data-per="month">Month</button></div></div><div id="stats"></div></div>
+<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:4px"><div class="lab" style="margin:0">Per activity <span class="sm">· ▲▼ vs last <span id="perl">week</span></span></div><div class="row"><button class="dp" data-per="week">Week</button><button class="dp" data-per="month">Month</button></div></div><div id="stats"></div></div>
+
+<div class="card"><div class="lab">Streaks &amp; consistency</div><div id="cons"></div></div>
+<div class="card"><div class="lab">Weight</div><div id="wc"></div></div>
+</div>
 </div>
 <div id="fin" hidden>
 <div class="card" id="flock" style="text-align:center;padding:26px 12px"><div style="font-size:30px">🔒</div><div class="mut" style="margin:6px 0 14px">Finance is hidden</div><button class="go" id="funhide">Unhide</button></div>
@@ -133,7 +146,8 @@ const fmt=m=>m>=60?Math.floor(m/60)+"h"+(m%60?" "+m%60+"m":""):m+"m";
 let VIEW="home",PR=[],PF="all",RV="week",RO=0,AC=[],BAL=[],GL=[],FE=false,FH=true,FM=today().slice(0,7);
 let G=[],A=[],L=new Map(),SL={},WT=[],CF=[],D=today(),EDIT=false,OPEN=null,ARM=null,PER="week",seen={},seeded=false,C={},tt;
 // Storage collection names (internal key -> stored name). Used for backup/restore.
-const PATH={grp:"grp",act:"act",log:"log",cfg:"cfg",sl:"sleep",wt:"weight",pr:"pr",acct:"acct",bal:"bal",goal:"goal"},RAW={};
+const PATH={grp:"grp",act:"act",log:"log",cfg:"cfg",sl:"sleep",wt:"weight",pr:"pr",acct:"acct",bal:"bal",goal:"goal",mood:"mood"},RAW={};
+let SUB="today",MD={};const FACES=["😫","😕","😐","🙂","😄"];
 const done=(a,d)=>a.auto==="sleep"?(SL[d]!=null&&SL[d]>=GOAL):L.has(d+"_"+a.id);
 const mins=(a,d)=>(L.get(d+"_"+a.id)||{}).mins||0;
 const risk=a=>{const T=today();return streak(a)>0&&!done(a,T)&&!done(a,addD(T,-1))&&!done(a,addD(T,-2))};
@@ -158,24 +172,35 @@ if(!G.length&&!EDIT)h=`<div class="mut">No groups yet. Tap Edit lists to create 
 $("list").innerHTML=h}
 function sw(){const s=SL[D];$("sn").textContent=s!=null?"Saved: "+s+" hrs":"";
 const w=WT.filter(x=>x.lbs>0),tw=w.find(x=>x.id===D);
-if(!w.length){$("wn").textContent="";$("wc").innerHTML="<div class='mut sm' style='margin-top:8px'>Log your weight to see the trend.</div>";return}
+if(!w.length){$("wn").textContent="";$("wc").innerHTML="<div class='mut sm'>Log your weight on the Today tab to see the trend.</div>";return}
 const W=640,H=190,pl=40,pr=12,pt=12,pb=26,v=w.map(x=>x.lbs),mn=Math.min(...v),mx=Math.max(...v),pad=Math.max((mx-mn)*.2,1),lo=mn-pad,hi=mx+pad,t0=pd(w[0].id).getTime(),t1=pd(w[w.length-1].id).getTime();
 const X=i=>pl+(t1===t0?(W-pl-pr)/2:(pd(w[i].id).getTime()-t0)/(t1-t0)*(W-pl-pr)),Y=y=>pt+(hi-y)/(hi-lo)*(H-pt-pb);
 let g="";for(let k=0;k<4;k++){const y=lo+(hi-lo)*k/3;g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(y)}" y2="${Y(y)}" stroke="var(--line)"/><text x="${pl-6}" y="${Y(y)+4}" text-anchor="end" font-size="11" fill="var(--mut)">${y.toFixed(1)}</text>`}
-$("wc").innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="margin-top:10px">${g}<polyline points="${w.map((x,i)=>X(i).toFixed(1)+","+Y(x.lbs).toFixed(1)).join(" ")}" fill="none" stroke="#ff6f9f" stroke-width="2.5"/>${w.map((x,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(x.lbs).toFixed(1)}" r="3.5" fill="#ff6f9f"/>`).join("")}<text x="${pl}" y="${H-6}" font-size="11" fill="var(--mut)">${w[0].id}</text><text x="${W-pr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--mut)">${w[w.length-1].id}</text></svg>`;
+$("wc").innerHTML=`<svg viewBox="0 0 ${W} ${H}">${g}<polyline points="${w.map((x,i)=>X(i).toFixed(1)+","+Y(x.lbs).toFixed(1)).join(" ")}" fill="none" stroke="#ff6f9f" stroke-width="2.5"/>${w.map((x,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(x.lbs).toFixed(1)}" r="3.5" fill="#ff6f9f"/>`).join("")}<text x="${pl}" y="${H-6}" font-size="11" fill="var(--mut)">${w[0].id}</text><text x="${W-pr}" y="${H-6}" text-anchor="end" font-size="11" fill="var(--mut)">${w[w.length-1].id}</text></svg>`;
 const dl=v[v.length-1]-v[0];$("wn").textContent=(tw?"Saved: "+tw.lbs+" lbs":"")+(w.length>1?(tw?" · ":"")+"Change: "+(dl>0?"+":"")+dl.toFixed(1)+" lbs":"")}
 function trends(){const T=today(),tot=A.length||1;
 const W=17,st=addD(mon(T),-7*(W-1));let h="";
 for(let i=0;i<W*7;i++){const d=addD(st,i);if(d>T){h+=`<i class="hc" style="visibility:hidden"></i>`;continue}
-const c=A.filter(a=>done(a,d)).length,lv=!c?0:c/tot>.6?4:c/tot>.4?3:c/tot>=.2?2:1,bg=["rgba(255,160,200,.08)","#e5484d","#e9dc4a","#3fb96b","rgba(255,120,40,.18)"][lv];h+=`<i class="hc${d===D?" sel":""}" data-day="${d}" title="${d}: ${c}/${A.length}" style="background:${bg};color:${lv===1?"#fff":"#10130a"}${lv===4?";font-size:12px":""}">${lv===4?"🔥":c||""}</i>`}
+const c=A.filter(a=>done(a,d)).length,lv=!c?0:c/tot>.6?4:c/tot>.4?3:c/tot>=.2?2:1,bg=["rgba(255,160,200,.08)","#e5484d","#e9dc4a","#3fb96b","rgba(255,120,40,.18)"][lv];h+=`<i class="hc${d===D?" sel":""}" data-day="${d}" title="${d}: ${c}/${A.length}${MD[d]&&MD[d].m?" · "+FACES[MD[d].m-1]:""}" style="background:${bg};color:${lv===1?"#fff":"#10130a"}${lv===4?";font-size:12px":""}">${lv===4?"🔥":c||""}</i>`}
 $("heat").innerHTML=h;
-const s0=PER==="week"?mon(T):T.slice(0,8)+"01";
-const rs=A.map(a=>{let m=0,n=0;for(let d=s0;d<=T;d=addD(d,1)){m+=mins(a,d);if(done(a,d))n++}return{a,m,n,k:streak(a)}});
+const s0=PER==="week"?mon(T):T.slice(0,8)+"01",el=Math.round((pd(T)-pd(s0))/864e5);
+// previous period: same number of days, starting at the start of last week / last month (capped at that month's end)
+let p0,p1;if(PER==="week"){p0=addD(s0,-7);p1=addD(T,-7)}else{const t=pd(s0);p0=iso(new Date(t.getFullYear(),t.getMonth()-1,1));const pe=addD(s0,-1);p1=addD(p0,el);if(p1>pe)p1=pe}
+const tally=(a,x,y)=>{let m=0,n=0;for(let d=x;d<=y;d=addD(d,1)){m+=mins(a,d);if(done(a,d))n++}return{m,n}};
+const rs=A.map(a=>{const c=tally(a,s0,T),q=tally(a,p0,p1);return{a,m:c.m,n:c.n,pm:q.m,pn:q.n}});
+const dv=(x,y,f)=>x===y?'<span class="mut">same</span>':`<span class="${x>y?"up":"dn"}">${x>y?"▲":"▼"} ${f(Math.abs(x-y))}</span>`,dd=x=>x+" day"+(x===1?"":"s");
 const m2=Math.max(...rs.map(r=>r.m),1);
-$("stats").innerHTML=rs.length?rs.map(r=>r.a.nt||r.a.auto?`<div class="ar" style="grid-template-columns:1fr auto"><div>${esc(r.a.name)}<small>🔥 ${r.k} streak</small></div><div class="tv">${r.n} day${r.n===1?"":"s"}</div></div>`:`<div class="ar"><div>${esc(r.a.name)}<small>${r.n} day${r.n===1?"":"s"} · 🔥 ${r.k} streak</small></div><div class="bar"><i style="width:${r.m/m2*100}%"></i></div><div class="tv">${fmt(r.m)}</div></div>`).join(""):"<div class='mut sm'>Add activities to see stats.</div>";
-const sk=A.map(a=>({a,k:streak(a)})).filter(x=>x.k>0).sort((x,y)=>y.k-x.k);
-const rk=sk.filter(x=>risk(x.a));
-$("streaks").innerHTML=(rk.length?`<div class="warn"><b>⚠️ Last day to save your streak${rk.length>1?"s":""}!</b><div class="sm mut">${rk.map(x=>esc(x.a.name)+" (🔥 "+x.k+")").join(", ")}. Do it today or the streak is lost.</div></div>`:"")+(sk.length?`<div class="lab" style="margin:14px 0 0">Current streaks (alive if done at least once every 3 days)</div><div class="sr">${sk.map(x=>`<div class="sc"><b>🔥 ${x.k}</b><span>${esc(x.a.name)}</span></div>`).join("")}</div>`:"");
+$("perl").textContent=PER;
+$("stats").innerHTML=rs.length?rs.map(r=>r.a.nt||r.a.auto?`<div class="ar" style="grid-template-columns:1fr auto"><div>${esc(r.a.name)}<small>${r.n||r.pn?dv(r.n,r.pn,dd):"&nbsp;"}</small></div><div class="tv">${dd(r.n)}</div></div>`:`<div class="ar"><div>${esc(r.a.name)}<small>${dd(r.n)}${r.n!==r.pn?" "+dv(r.n,r.pn,x=>x):""}${r.m||r.pm?" · time "+dv(r.m,r.pm,fmt):""}</small></div><div class="bar"><i style="width:${r.m/m2*100}%"></i></div><div class="tv">${fmt(r.m)}</div></div>`).join(""):"<div class='mut sm'>Add activities to see stats.</div>";
+// Streaks & consistency: current, best ever, days done in the last 30
+const ix={};L.forEach(y=>{(ix[y.act]=ix[y.act]||[]).push(y.date)});
+const best=a=>{const ds=(a.auto==="sleep"?Object.keys(SL).filter(k=>SL[k]>=GOAL):(ix[a.id]||[])).filter(d=>d<=T).sort();let b=0,f=null,l=null;
+for(const d of ds){if(l&&Math.round((pd(d)-pd(l))/864e5)>GAP){b=Math.max(b,Math.round((pd(l)-pd(f))/864e5)+1);f=d}if(!f)f=d;l=d}
+if(f)b=Math.max(b,Math.round((pd(l)-pd(f))/864e5)+1);return Math.max(b,streak(a))};
+const c30=a=>{let n=0;for(let i=0;i<30;i++)if(done(a,addD(T,-i)))n++;return n};
+$("cons").innerHTML=A.length?`<div class="cs h"><div></div><span>Now</span><span>Best</span><span>30 days</span></div>`+A.map(a=>{const k=streak(a),b=best(a),n=c30(a);return`<div class="cs"><div>${esc(a.name)}</div><span style="color:#ffb454">${k?"🔥 "+k:'<span class="mut">–</span>'}</span><span style="color:${b&&b===k?"#ffd45e":"var(--tx)"}">${b||'<span class="mut">–</span>'}</span><span>${n}/30</span></div>`}).join("")+`<div class="mut sm" style="margin-top:8px">Best = longest streak ever (gold when you're on it now). 30 days = days done in the last 30.</div>`:"<div class='mut sm'>Add activities to see streaks.</div>";
+const rk=A.map(a=>({a,k:streak(a)})).filter(x=>x.k>0&&risk(x.a)).sort((x,y)=>y.k-x.k);
+$("streaks").innerHTML=rk.length?`<div class="warn"><b>⚠️ Last day to save your streak${rk.length>1?"s":""}!</b><div class="sm mut">${rk.map(x=>esc(x.a.name)+" (🔥 "+x.k+")").join(", ")}. Do it today or the streak is lost.</div></div>`:"";
 document.querySelectorAll(".dp").forEach(b=>b.classList.toggle("on",b.dataset.per===PER))}
 const emj=n=>{n=(n||"").toLowerCase();return n.includes("pull")?"🧗":n.includes("push")?"🤸":n.includes("curl")?"💪":n.includes("lateral")?"🙌":"🏋️"};
 const fd=s=>pd(s).toLocaleString("en-US",{month:"short",day:"numeric"});
@@ -227,6 +252,8 @@ const {fl}=prCalc(),hit=PR.filter(x=>x.date>=s&&x.date<=cap&&(fl[x.id]||[]).leng
 let t=tile("Days active",cu.act+" / "+cu.n,dl(cu.act,pv.act))+tile("Check-offs",cu.chk,dl(cu.chk,pv.chk))+tile("Time logged",fmt(cu.m),dl(cu.m,pv.m,fmt))+tile("PRs hit","🏆 "+hit.length,hit.length?"this "+RV:"none yet this "+RV);
 const sv=Object.keys(SL).filter(k=>k>=s&&k<=cap).map(k=>SL[k]);
 if(sv.length)t+=tile("Avg sleep",(sv.reduce((a,b)=>a+b,0)/sv.length).toFixed(1)+" hrs",sv.length+" night"+(sv.length===1?"":"s")+" logged");
+const mv=Object.keys(MD).filter(k=>k>=s&&k<=cap&&MD[k].m).map(k=>MD[k].m);
+if(mv.length){const av=mv.reduce((a,b)=>a+b,0)/mv.length;t+=tile("Avg mood",FACES[Math.round(av)-1]+" "+av.toFixed(1),mv.length+" day"+(mv.length===1?"":"s")+" rated")}
 const wv=WT.filter(x=>x.id>=s&&x.id<=cap&&x.lbs>0);
 if(wv.length>1){const df=wv[wv.length-1].lbs-wv[0].lbs;t+=tile("Weight",(df>0?"+":"")+df.toFixed(1)+" lbs",wv[0].lbs+" → "+wv[wv.length-1].lbs)}
 const pd2=x=>x.type==="run"?"🏃 Run "+mi(x.dist)+" · "+ft(x.secs):emj(x.name)+" "+esc(x.name)+" "+(x.w?x.w+" lbs × "+x.reps:x.reps+" reps");
@@ -253,9 +280,15 @@ $("lnl").innerHTML=names.map(n=>`<option value="${esc(n)}">`).join("");
 const rows=PR.filter(x=>PF==="all"||(PF==="runs"?x.type==="run":x.type==="lift")).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.ts-a.ts);
 $("plog").innerHTML=rows.length?rows.map(x=>`<div class="le${(fl[x.id]||[]).length?" pr":""}"><div><b>${x.type==="run"?"🏃 Run":em(x.name)+" "+esc(x.name)}</b> ${x.type==="run"?mi(x.dist)+" · "+ft(x.secs)+" · "+fs(x.secs/x.dist)+" /mi":(x.w?x.w+" lbs × "+x.reps:x.reps+" reps")}${(fl[x.id]||[]).map(b=>`<span class="bd">🏆 ${b}</span>`).join("")}${cur.has(x.id)?'<span class="bd">👑</span>':""}<div class="d">${x.date}</div></div><button class="x" data-delpr="${x.id}">${ARM==="p"+x.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Nothing logged yet.</div>";
 document.querySelectorAll("[data-pf]").forEach(b=>b.classList.toggle("on",b.dataset.pf===PF))}
+function ring(){const n=A.filter(a=>done(a,D)).length,t=A.length,m=A.reduce((s,a)=>s+mins(a,D),0),p=t?n/t:0,R=34,c=2*Math.PI*R,full=t>0&&n===t,col=full?"#ffd45e":"#ff6f9f";
+$("ring").innerHTML=`<div class="rg"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="${R}" fill="none" stroke="rgba(255,160,200,.14)" stroke-width="8"/>${p>0?`<circle cx="42" cy="42" r="${R}" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(p*c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 42 42)"/>`:""}<text x="42" y="48" text-anchor="middle" font-family="Orbitron,Arial" font-weight="700" font-size="16" fill="${col}">${Math.round(p*100)}%</text></svg><div><b style="color:${col}">${n} / ${t} done</b><div class="mut sm">${m?fmt(m)+" logged":"No time logged"} · ${D===today()?"today":fd(D)}</div>${full?'<div class="sm" style="color:#ffd45e">🎉 Everything done!</div>':""}</div></div>`}
+function moodCard(){const ae=document.activeElement;if($("mood").contains(ae)&&ae.tagName==="TEXTAREA")return;const x=MD[D]||{};
+$("mood").innerHTML=`<div class="row" style="flex-wrap:nowrap">${FACES.map((f,i)=>`<button class="mf${x.m===i+1?" on":""}" data-mood="${i+1}" aria-label="Mood ${i+1} of 5">${f}</button>`).join("")}</div><textarea id="mnote" rows="2" placeholder="Note for the day (optional)">${esc(x.note||"")}</textarea>`}
+// Save mood/note for the open date; removes the doc when both are empty
+const saveMood=(m,note)=>{const o={};if(m)o.m=m;if(note)o.note=note;wr(()=>Object.keys(o).length?C.mood.doc(D).set(o):(MD[D]?C.mood.doc(D).delete():null))};
 function render(){if(!seen.ready)return;$("dt").value=D;
-const n=A.filter(a=>done(a,D)).length,m=A.reduce((s,a)=>s+mins(a,D),0);
-$("sum").textContent=n+" / "+A.length+" done"+(m?" · "+fmt(m)+" logged":"")+(D===today()?"":" · "+D);
+ring();moodCard();
+$("today").hidden=SUB!=="today";$("trends").hidden=SUB!=="trends";document.querySelectorAll("[data-sub]").forEach(b=>b.classList.toggle("on",b.dataset.sub===SUB));
 $("edit").textContent=EDIT?"Done":"Edit lists";list();sw();trends();prs();$("home").hidden=VIEW!=="home";$("prs").hidden=VIEW!=="prs";$("recap").hidden=VIEW!=="recap";if(VIEW==="recap")recap();$("fin").hidden=VIEW!=="fin";$("flock").hidden=!FH;$("fbody").hidden=FH;if(VIEW==="fin"&&!FH)fin();document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("on",b.dataset.view===VIEW));
 $("rsb").textContent=ARM==="restore"?"Tap again: replaces ALL data":"Restore"}
 async function seed(){await wr(async()=>{let o=0;for(let gi=0;gi<DEF.length;gi++){await C.grp.doc("g"+gi).set({name:DEF[gi][0],o:++o});for(let ai=0;ai<DEF[gi][1].length;ai++){const nm=DEF[gi][1][ai],x={name:nm,g:"g"+gi,o:++o};if(nm==="Hit sleep goal")x.auto="sleep";if(nm==="Creatine"||nm==="Water goal")x.nt=true;await C.act.doc("a"+gi+"_"+ai).set(x)}}await C.cfg.doc("seeded").set({v:1})})}
@@ -277,6 +310,8 @@ else if(t.id==="prev"||t.id==="next"){D=addD(D,t.id==="prev"?-1:1);render()}
 else if(t.id==="tdy"){D=today();render()}
 else if(t.id==="sb"){const h=parseFloat($("sh").value);if(!(h>=0))return toast("Enter hours");wr(async()=>{await C.sl.doc(D).set({hours:h});$("sh").value="";toast("Sleep saved")})}
 else if(t.id==="wb"){const h=parseFloat($("wh").value);if(!(h>0))return toast("Enter weight");wr(async()=>{await C.wt.doc(D).set({lbs:h});$("wh").value="";toast("Weight saved")})}
+else if(d.sub){SUB=d.sub;ARM=null;render();window.scrollTo(0,0)}
+else if(d.mood){const x=MD[D]||{},m=+d.mood;saveMood(x.m===m?0:m,x.note||"")}
 else if(d.view){VIEW=d.view;ARM=null;if(d.view!=="fin"){FH=true;FE=false}render();window.scrollTo(0,0)}
 else if(d.pf){PF=d.pf;render()}
 else if(d.rv){RV=d.rv;RO=0;render()}
@@ -292,7 +327,7 @@ else if(d.addacc){const v=$("na").value.trim();if(v)wr(()=>C.acct.doc("c"+uid())
 else if(d.addgoal){const v=$("ng").value.trim();if(v)wr(()=>C.goal.doc("q"+uid()).set({name:v,target:parseFloat($("nt").value)||0,acct:"",manual:0,o:Date.now()}))}
 else if(d.delacc||d.delgoal){const k=d.delacc?"c"+d.delacc:"q"+d.delgoal;if(ARM!==k){ARM=k;render();return}ARM=null;
 if(d.delgoal)wr(()=>C.goal.doc(d.delgoal).delete());else wr(async()=>{for(const b of BAL.filter(b=>b.acct===d.delacc))await C.bal.doc(b.id).delete();await C.acct.doc(d.delacc).delete()})}
-else if(d.day){D=d.day;render();window.scrollTo(0,0)}
+else if(d.day){D=d.day;SUB="today";render();window.scrollTo(0,0)}
 else if(d.per){PER=d.per;render()}
 else if(d.tog){const k=D+"_"+d.tog;wr(()=>L.has(k)?C.log.doc(k).delete():C.log.doc(k).set({date:D,act:d.tog,mins:0}))}
 else if(d.nt){const a=A.find(x=>x.id===d.nt);if(a)wr(()=>C.act.doc(d.nt).update({nt:!a.nt}))}
@@ -304,6 +339,7 @@ else if(d.delact||d.delgrp){const k=d.delact?"a"+d.delact:"g"+d.delgrp;if(ARM!==
 if(d.delact)wr(()=>C.act.doc(d.delact).delete());else wr(async()=>{for(const a of A.filter(a=>a.g===d.delgrp))await C.act.doc(a.id).delete();await C.grp.doc(d.delgrp).delete()})}});
 document.addEventListener("change",e=>{const t=e.target,d=t.dataset;
 if(t.id==="dt"){if(t.value){D=t.value;render()}}
+else if(t.id==="mnote"){const x=MD[D]||{},v=t.value.trim();if(v!==(x.note||""))saveMood(x.m||0,v)}
 else if(t.id==="rsf"){const f=t.files&&t.files[0];t.value="";if(f)restore(f)}
 else if(d.ren){const v=t.value.trim();if(v)wr(()=>C.act.doc(d.ren).update({name:v}))}
 else if(d.rg){const v=t.value.trim();if(v)wr(()=>C.grp.doc(d.rg).update({name:v}))}
@@ -329,7 +365,7 @@ $("msg").hidden=true;$("auth").hidden=true;$("app").hidden=false;seen.ready=1;$(
 sub("grp",x=>G=x.sort(by));sub("act",x=>A=x.sort(by));sub("cfg",x=>CF=x);
 sub("log",x=>L=new Map(x.map(y=>[y.id,y])));
 sub("sl",x=>{SL={};x.forEach(y=>SL[y.id]=y.hours)});
-sub("wt",x=>WT=x.sort((a,b)=>a.id<b.id?-1:1));sub("pr",x=>PR=x);sub("acct",x=>AC=x.sort(by));sub("bal",x=>BAL=x);sub("goal",x=>GL=x.sort(by));
+sub("wt",x=>WT=x.sort((a,b)=>a.id<b.id?-1:1));sub("pr",x=>PR=x);sub("acct",x=>AC=x.sort(by));sub("bal",x=>BAL=x);sub("goal",x=>GL=x.sort(by));sub("mood",x=>{MD={};x.forEach(y=>MD[y.id]=y)});
 render()}
 </script>
 <script type="module">
