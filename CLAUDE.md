@@ -16,7 +16,8 @@ Personal daily-activity tracker for Cameron, built phone-first. Single self-cont
 
 ## Look and feel
 - Calm futuristic dark theme, warm pink accent `#ff6f9f`, warm dark background `#0d0810`, glass-like cards, plus pastel tiles (`PAL`: mint `#a9d6c9`, pink `#ffb3cc`, yellow `#f6dc8d`, lilac `#cdbdf0`, peach `#ffc9a8`, sky `#a8d4f0`) with dark text. Chosen design: "style C" (hybrid of dark theme + pastel tiles)
-- Fonts: Orbitron (headings, numbers) + Rajdhani (body), from Google Fonts
+- Gradients everywhere (see "Gradients & polish" CSS block): glowing multi-color page background (pink/purple/orange), gradient cards, glossy sheen on pastel tiles (`.t` background-image overlay with `!important` so it sits on top of the inline tile color), gradient buttons/toggles/bars/calendar days, pink-to-purple gauge stroke (gold when 100%), gradient "LIFE OF PIGE" title text
+- Fonts: Sora (headings, numbers) + Outfit (body), from Google Fonts, with tabular numbers. Orbitron/Rajdhani were dropped because the numbers were hard to read
 - Colors with meaning: orange `#ffb454` for streaks, gold `#ffd45e` for PRs, red-tint for the streak warning
 - Phone-first (iPhone, Safari). Safe-area padding is in place. Add to home screen from Safari (Share → Add to Home Screen); opens full-screen
 - Units: lbs, miles, weeks start Monday. Page title/header: "Life of Pige"
