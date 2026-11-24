@@ -226,7 +226,7 @@ body{--sl:200px}body:has(#today:not([hidden])){--rr:340px}#today.cols{height:cal
 <div class="hd"><h3>Upcoming</h3></div><div class="card" id="blist"></div>
 <div class="card" id="badd"><div class="lab">Add a bill</div>
 <div class="row"><input id="nbn" placeholder="Name (e.g. Rent)" style="flex:1;min-width:150px"><input id="nba" type="number" step="0.01" min="0" placeholder="$ Amount" style="width:110px"></div>
-<div class="row" style="margin-top:8px"><select id="nbf"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select><select id="nbm" hidden><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select><input id="nbd" type="number" min="1" max="31" placeholder="Due day" style="width:96px"><select id="nbc"><option>Housing</option><option>Utilities</option><option>Phone &amp; internet</option><option>Subscriptions</option><option>Insurance</option><option>Loans &amp; cards</option><option>Transport</option><option>Other</option></select></div>
+<div class="row" style="margin-top:8px"><select id="nbf"><option value="monthly">Monthly</option><option value="twice">Twice a month</option><option value="yearly">Yearly</option></select><select id="nbm" hidden><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select><input id="nbd" type="number" min="1" max="31" placeholder="Due day" style="width:96px"><input id="nbd2" type="number" min="1" max="31" placeholder="2nd day" style="width:96px" hidden><select id="nbc"><option>Housing</option><option>Utilities</option><option>Phone &amp; internet</option><option>Subscriptions</option><option>Insurance</option><option>Loans &amp; cards</option><option>Transport</option><option>Other</option></select></div>
 <div class="row" style="margin-top:10px;justify-content:space-between"><label class="sm"><input type="checkbox" id="nbauto"> 🔁 Autopay</label><button class="go" data-addbill="1">Add bill</button></div></div>
 </div><div class="col">
 <div class="hd"><h3>Yearly cost</h3></div><div class="card" id="byr"></div>
@@ -401,10 +401,10 @@ const CATS=["Housing","Utilities","Phone & internet","Subscriptions","Insurance"
 const dim=(y,m)=>new Date(y,m,0).getDate(),bdue=(b,y,m)=>y+"-"+z(m)+"-"+z(Math.min(+b.day||1,dim(y,m)));
 // All due dates of a bill between two dates (monthly: day of every month, clamped to short months; yearly: month+day)
 function bcyc(b,from,to){const o=[];if(b.freq==="yearly"){for(let y=+from.slice(0,4);y<=+to.slice(0,4);y++){const d=bdue(b,y,+b.month||1);if(d>=from&&d<=to)o.push(d)}return o}
-let[y,m]=from.split("-").map(Number);for(let i=0;i<600;i++){const d=bdue(b,y,m);if(d>to)break;if(d>=from)o.push(d);if(++m>12){m=1;y++}}return o}
+let[y,m]=from.split("-").map(Number);for(let i=0;i<600;i++){const ds=[...new Set([bdue(b,y,m),...(b.freq==="twice"?[bdue({day:b.day2||15},y,m)]:[])])].sort();if(ds[0]>to)break;ds.forEach(d=>{if(d>=from&&d<=to)o.push(d)});if(++m>12){m=1;y++}}return o}
 // Next due date = earliest unpaid cycle since the bill was added (autopay: past cycles count as paid)
 function bnext(b){const T=today();for(const d of bcyc(b,b.since||T,addD(T,800))){if(b.auto&&d<T)continue;if(!PAIDS.has(b.id+"_"+d))return d}return null}
-const byear=b=>b.freq==="yearly"?+b.amt||0:(+b.amt||0)*12,usd2=n=>"$"+(+n||0).toLocaleString("en-US",{minimumFractionDigits:(+n%1)?2:0,maximumFractionDigits:2});
+const bpay=b=>b.freq==="twice"?(+b.amt||0)/2:+b.amt||0,byear=b=>b.freq==="yearly"?+b.amt||0:(+b.amt||0)*12,usd2=n=>"$"+(+n||0).toLocaleString("en-US",{minimumFractionDigits:(+n%1)?2:0,maximumFractionDigits:2});
 const ddays=d=>Math.round((pd(d)-pd(today()))/864e5);
 const dlab=d=>{const n=ddays(d);return n<0?`Overdue · ${-n} day${n===-1?"":"s"}`:n===0?"Due today":n===1?"Due tomorrow":n<=6?"Due "+pd(d).toLocaleString("en-US",{weekday:"long"}):"Due "+fd(d)};
 const catc=c=>PAL[Math.max(0,CATS.indexOf(c))%PAL.length];
@@ -412,14 +412,14 @@ function billMap(from,to){const m={};BL.forEach(b=>bcyc(b,from,to).forEach(d=>{i
 function bills(){const T=today(),rows=BL.map(b=>({b,n:bnext(b)})).sort((x,y)=>(x.n||"9")<(y.n||"9")?-1:(x.n||"9")>(y.n||"9")?1:0);
 const yr=BL.reduce((s,b)=>s+byear(b),0),soon=rows.filter(r=>r.n&&!r.b.auto&&ddays(r.n)<=7),nx=rows.find(r=>r.n);
 let ti=0;const tile=(l,v,sm)=>`<div class="t" style="background:${PAL[ti++%4]}"><span class="tl2">${l}</span><b>${v}</b><small>${sm}</small></div>`;
-$("btiles").innerHTML=BL.length?tile("Next up",nx?esc(nx.b.name):"–",nx?fd(nx.n)+" · "+usd2(nx.b.amt):"")+tile("Due in 7 days",usd2(soon.reduce((s,r)=>s+(+r.b.amt||0),0)),soon.length+" bill"+(soon.length===1?"":"s")+" to pay")+tile("Per month",usd2(Math.round(yr/12)),"average")+tile("Per year",usd2(Math.round(yr)),BL.length+" bill"+(BL.length===1?"":"s")):"";
+$("btiles").innerHTML=BL.length?tile("Next up",nx?esc(nx.b.name):"–",nx?fd(nx.n)+" · "+usd2(bpay(nx.b)):"")+tile("Due in 7 days",usd2(soon.reduce((s,r)=>s+bpay(r.b),0)),soon.length+" bill"+(soon.length===1?"":"s")+" to pay")+tile("Per month",usd2(Math.round(yr/12)),"average")+tile("Per year",usd2(Math.round(yr)),BL.length+" bill"+(BL.length===1?"":"s")):"";
 $("bedit").textContent=BE?"Done":"Edit bills";$("bedit").hidden=!BL.length;
-const fsel=(b)=>`<select data-bfreq="${b.id}"><option value="monthly"${b.freq!=="yearly"?" selected":""}>Monthly</option><option value="yearly"${b.freq==="yearly"?" selected":""}>Yearly</option></select>`;
+const fsel=(b)=>`<select data-bfreq="${b.id}">${[["monthly","Monthly"],["twice","Twice a month"],["yearly","Yearly"]].map(([v,l])=>`<option value="${v}"${(b.freq||"monthly")===v?" selected":""}>${l}</option>`).join("")}</select>`;
 $("blist").innerHTML=!BL.length?"<div class='mut sm'>No bills yet. Add one below.</div>":rows.map(({b,n})=>BE?
-`<div class="bl ed"><input class="an" data-bname="${b.id}" value="${esc(b.name)}" style="min-width:140px"><input type="number" step="0.01" min="0" data-bamt="${b.id}" value="${b.amt}">${fsel(b)}${b.freq==="yearly"?`<select data-bmon="${b.id}">${MONS.map((m,i)=>`<option value="${i+1}"${+b.month===i+1?" selected":""}>${m}</option>`).join("")}</select>`:""}<input type="number" min="1" max="31" data-bday="${b.id}" value="${b.day}" style="width:64px"><select data-bcat="${b.id}">${CATS.map(c=>`<option${c===b.cat?" selected":""}>${esc(c)}</option>`).join("")}</select><label class="sm"><input type="checkbox" data-bauto="${b.id}"${b.auto?" checked":""}> Autopay</label><button class="x" data-delbill="${b.id}">${ARM==="b"+b.id?"Tap again":"✕"}</button></div>`:
-`<div class="bl"><div class="bn"><b>${esc(b.name)}</b><small><span class="bc" style="background:${catc(b.cat)}">${esc(b.cat||"Other")}</span>${b.freq==="yearly"?"Yearly · "+MONS[(+b.month||1)-1]+" "+b.day:"Monthly · day "+b.day}${b.auto?" · 🔁 Autopay":""}</small></div><div class="ba"><b>${usd2(b.amt)}</b><small class="${n&&ddays(n)<0?"due-o":n&&ddays(n)<=3?"due-s":"mut"}">${n?dlab(n):""}</small></div>${b.auto||!n?"":`<button class="go sm4" data-bpay="${b.id}" data-due="${n}">Paid</button>`}</div>`).join("");
+`<div class="bl ed"><input class="an" data-bname="${b.id}" value="${esc(b.name)}" style="min-width:140px"><input type="number" step="0.01" min="0" data-bamt="${b.id}" value="${b.amt}">${fsel(b)}${b.freq==="yearly"?`<select data-bmon="${b.id}">${MONS.map((m,i)=>`<option value="${i+1}"${+b.month===i+1?" selected":""}>${m}</option>`).join("")}</select>`:""}<input type="number" min="1" max="31" data-bday="${b.id}" value="${b.day}" style="width:64px">${b.freq==="twice"?`<input type="number" min="1" max="31" data-bday2="${b.id}" value="${b.day2||15}" style="width:64px">`:""}<select data-bcat="${b.id}">${CATS.map(c=>`<option${c===b.cat?" selected":""}>${esc(c)}</option>`).join("")}</select><label class="sm"><input type="checkbox" data-bauto="${b.id}"${b.auto?" checked":""}> Autopay</label><button class="x" data-delbill="${b.id}">${ARM==="b"+b.id?"Tap again":"✕"}</button></div>`:
+`<div class="bl"><div class="bn"><b>${esc(b.name)}</b><small><span class="bc" style="background:${catc(b.cat)}">${esc(b.cat||"Other")}</span>${b.freq==="yearly"?"Yearly · "+MONS[(+b.month||1)-1]+" "+b.day:b.freq==="twice"?"Twice a month · days "+Math.min(b.day,b.day2||15)+" & "+Math.max(b.day,b.day2||15)+" · "+usd2(b.amt)+"/mo":"Monthly · day "+b.day}${b.auto?" · 🔁 Autopay":""}</small></div><div class="ba"><b>${usd2(bpay(b))}</b><small class="${n&&ddays(n)<0?"due-o":n&&ddays(n)<=3?"due-s":"mut"}">${n?dlab(n):""}</small></div>${b.auto||!n?"":`<button class="go sm4" data-bpay="${b.id}" data-due="${n}">Paid</button>`}</div>`).join("");
 const ys=[...BL].sort((a,b)=>byear(b)-byear(a)),ym=Math.max(1,...ys.map(byear));
-$("byr").innerHTML=!BL.length?"<div class='mut sm'>Add bills to see what they cost per year.</div>":ys.map(b=>`<div class="ar"><div>${esc(b.name)}<small>${b.freq==="yearly"?"yearly":usd2(b.amt)+" × 12"}</small></div><div class="bar"><i style="width:${byear(b)/ym*100}%;background:${catc(b.cat)}"></i></div><div class="tv">${usd2(Math.round(byear(b)))}</div></div>`).join("")+`<div class="ar" style="grid-template-columns:1fr auto"><div><b>Total per year</b></div><div class="tv">${usd2(Math.round(yr))}</div></div>`;
+$("byr").innerHTML=!BL.length?"<div class='mut sm'>Add bills to see what they cost per year.</div>":ys.map(b=>`<div class="ar"><div>${esc(b.name)}<small>${b.freq==="yearly"?"yearly":usd2(b.amt)+(b.freq==="twice"?"/mo":"")+" × 12"}</small></div><div class="bar"><i style="width:${byear(b)/ym*100}%;background:${catc(b.cat)}"></i></div><div class="tv">${usd2(Math.round(byear(b)))}</div></div>`).join("")+`<div class="ar" style="grid-template-columns:1fr auto"><div><b>Total per year</b></div><div class="tv">${usd2(Math.round(yr))}</div></div>`;
 const hs=[...PAIDL].sort((a,b)=>(b.at||"")<(a.at||"")?-1:(b.at||"")>(a.at||"")?1:(b.due<a.due?-1:1)).slice(0,20);
 $("bhist").innerHTML=hs.length?hs.map(p=>`<div class="le"><div>✓ ${esc(p.name||"Bill")} · ${usd2(p.amt)}<div class="d">due ${fd(p.due)} · paid ${fd(p.at||p.due)}</div></div><button class="x" data-delpaid="${p.id}">${ARM==="y"+p.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Bills you mark paid show up here.</div>"}
 // Desktop-only greeting header (hidden on phones)
@@ -483,10 +483,11 @@ if(t.id!=="rsb"&&ARM==="restore"){ARM=null;render()}
 if(t.id==="edit"){EDIT=!EDIT;ARM=null;OPEN=null;render()}
 else if(t.id==="bk")backup()
 else if(t.id==="bedit"){BE=!BE;ARM=null;render()}
-else if(d.bpay){const b=BL.find(x=>x.id===d.bpay);if(b)wr(async()=>{await C.paid.doc(b.id+"_"+d.due).set({bill:b.id,name:b.name,due:d.due,amt:+b.amt||0,at:today()});toast("Marked paid ✓")})}
+else if(d.bpay){const b=BL.find(x=>x.id===d.bpay);if(b)wr(async()=>{await C.paid.doc(b.id+"_"+d.due).set({bill:b.id,name:b.name,due:d.due,amt:bpay(b),at:today()});toast("Marked paid ✓")})}
 else if(d.addbill){const name=$("nbn").value.trim(),amt=parseFloat($("nba").value),day=parseInt($("nbd").value),freq=$("nbf").value;
-if(!name||!(amt>=0)||!(day>=1&&day<=31))return toast("Enter name, amount and due day (1–31)");
-wr(async()=>{await C.bill.doc("b"+uid()).set({name,amt,freq,day,month:freq==="yearly"?+$("nbm").value:0,cat:$("nbc").value,auto:$("nbauto").checked,since:today(),o:Date.now()});$("nbn").value=$("nba").value=$("nbd").value="";$("nbauto").checked=false;toast("Bill added")})}
+const day2=parseInt($("nbd2").value);if(!name||!(amt>=0)||!(day>=1&&day<=31))return toast("Enter name, amount and due day (1–31)");
+if(freq==="twice"&&!(day2>=1&&day2<=31&&day2!==day))return toast("Enter a different 2nd day (1–31)");
+wr(async()=>{await C.bill.doc("b"+uid()).set({name,amt,freq,day,...(freq==="twice"?{day2}:{}),month:freq==="yearly"?+$("nbm").value:0,cat:$("nbc").value,auto:$("nbauto").checked,since:today(),o:Date.now()});$("nbn").value=$("nba").value=$("nbd").value=$("nbd2").value="";$("nbauto").checked=false;toast("Bill added")})}
 else if(d.delbill){const k="b"+d.delbill;if(ARM!==k){ARM=k;render();return}ARM=null;wr(()=>C.bill.doc(d.delbill).delete())}
 else if(d.delpaid){const k="y"+d.delpaid;if(ARM!==k){ARM=k;render();return}ARM=null;wr(()=>C.paid.doc(d.delpaid).delete())}
 else if(t.id==="remon")remOn()
@@ -529,11 +530,12 @@ if(d.delact)wr(()=>C.act.doc(d.delact).delete());else wr(async()=>{for(const a o
 document.addEventListener("change",e=>{const t=e.target,d=t.dataset;
 if(t.id==="dt"){if(t.value){D=t.value;render()}}
 else if(t.id==="mnote"){const x=MD[D]||{},v=t.value.trim();if(v!==(x.note||""))saveMood(x.m||0,v)}
-else if(t.id==="nbf")$("nbm").hidden=t.value!=="yearly"
+else if(t.id==="nbf"){$("nbm").hidden=t.value!=="yearly";$("nbd2").hidden=t.value!=="twice";$("nba").placeholder=t.value==="twice"?"$ Per month":"$ Amount";$("nbd").placeholder=t.value==="twice"?"1st day":"Due day"}
 else if(d.bname){const v=t.value.trim();if(v)wr(()=>C.bill.doc(d.bname).update({name:v}))}
 else if(d.bamt){const v=parseFloat(t.value);if(v>=0)wr(()=>C.bill.doc(d.bamt).update({amt:v}))}
+else if(d.bday2){const v=parseInt(t.value);if(v>=1&&v<=31)wr(()=>C.bill.doc(d.bday2).update({day2:v}))}
 else if(d.bday){const v=parseInt(t.value);if(v>=1&&v<=31)wr(()=>C.bill.doc(d.bday).update({day:v}))}
-else if(d.bfreq)wr(()=>C.bill.doc(d.bfreq).update({freq:t.value,month:t.value==="yearly"?(new Date().getMonth()+1):0}))
+else if(d.bfreq){const b=BL.find(x=>x.id===d.bfreq)||{};wr(()=>C.bill.doc(d.bfreq).update({freq:t.value,month:t.value==="yearly"?(new Date().getMonth()+1):0,...(t.value==="twice"&&!b.day2?{day2:(+b.day||1)<=15?Math.min(31,(+b.day||1)+14):Math.max(1,(+b.day||1)-14)}:{})}))}
 else if(d.bmon)wr(()=>C.bill.doc(d.bmon).update({month:+t.value}))
 else if(d.bcat)wr(()=>C.bill.doc(d.bcat).update({cat:t.value}))
 else if(d.bauto)wr(()=>C.bill.doc(d.bauto).update({auto:t.checked}))

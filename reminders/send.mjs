@@ -80,7 +80,10 @@ function bcyc(b, from, to) {
   const o = [];
   if (b.freq === "yearly") { for (let y = +from.slice(0, 4); y <= +to.slice(0, 4); y++) { const d = bdue(b, y, +b.month || 1); if (d >= from && d <= to) o.push(d) } return o }
   let [y, m] = from.split("-").map(Number);
-  for (let i = 0; i < 600; i++) { const d = bdue(b, y, m); if (d > to) break; if (d >= from) o.push(d); if (++m > 12) { m = 1; y++ } }
+  for (let i = 0; i < 600; i++) {
+    const ds = [...new Set([bdue(b, y, m), ...(b.freq === "twice" ? [bdue({ day: b.day2 || 15 }, y, m)] : [])])].sort();
+    if (ds[0] > to) break; ds.forEach(d => { if (d >= from && d <= to) o.push(d) }); if (++m > 12) { m = 1; y++ }
+  }
   return o;
 }
 const bnext = b => { for (const d of bcyc(b, b.since || TODAY, addD(TODAY, 800))) { if (b.auto && d < TODAY) continue; if (!PS.has(b.id + "_" + d)) return d } return null };
@@ -88,6 +91,7 @@ const due = bills.filter(b => !b.auto).map(b => ({ b, d: bnext(b) })).filter(x =
 
 // ---- Messages (short: at most 2 names) ----
 const two = n => n.length > 2 ? `${n[0]}, ${n[1]} +${n.length - 2} more` : n.join(" & ");
+const bpay = b => b.freq === "twice" ? (+b.amt || 0) / 2 : +b.amt || 0;
 const usd = n => "$" + (+n || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 const when = d => { const n = diff(d, TODAY); return n === 0 ? "today" : n === 1 ? "tomorrow" : new Date(d + "T12:00:00Z").toLocaleString("en-US", { weekday: "long", timeZone: "UTC" }) };
 const msgs = [];
@@ -95,7 +99,7 @@ const names = risk.map(x => x.a.name);
 if (risk.length === 1) msgs.push({ title: `🔥 ${names[0]} streak ends today`, body: "Tap to keep it going.", url: SITE, tag: "streak" });
 else if (risk.length) msgs.push({ title: `🔥 ${risk.length} streaks end today`, body: two(names) + ". Tap to keep them going.", url: SITE, tag: "streak" });
 const over = due.filter(x => x.d < TODAY);
-if (due.length === 1) { const { b, d } = due[0]; msgs.push(d < TODAY ? { title: `⚠️ ${b.name} is overdue`, body: `${usd(b.amt)} · Tap to mark it paid.`, url: SITE, tag: "bill" } : { title: `💵 ${b.name} due ${when(d)}`, body: `${usd(b.amt)} · Tap to mark it paid.`, url: SITE, tag: "bill" }); }
+if (due.length === 1) { const { b, d } = due[0]; msgs.push(d < TODAY ? { title: `⚠️ ${b.name} is overdue`, body: `${usd(bpay(b))} · Tap to mark it paid.`, url: SITE, tag: "bill" } : { title: `💵 ${b.name} due ${when(d)}`, body: `${usd(bpay(b))} · Tap to mark it paid.`, url: SITE, tag: "bill" }); }
 else if (due.length) msgs.push({ title: over.length ? `⚠️ ${due.length} bills need paying` : `💵 ${due.length} bills due soon`, body: two(due.map(x => x.b.name)) + ".", url: SITE, tag: "bill" });
 if (!msgs.length && FORCE) msgs.push({ title: "🐷 Reminders are working", body: "This is a test. You'll get these when a streak is about to end or a bill is due.", url: SITE, tag: "test" });
 if (!msgs.length) { console.log("No streaks at risk and no bills due."); await patch("push", "main", { lastSent: TODAY }); process.exit(0); }

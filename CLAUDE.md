@@ -38,7 +38,7 @@ Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bott
 | `bal` | `<YYYY-MM>_<acctId>` | `m`, `acct`, `amt` |
 | `goal` | `q<uid>` | `name`, `target`, `acct` ("" = manual), `manual`, `o` |
 | `mood` | `<date>` | optional `m` (1–5), optional `note` (doc deleted when both empty) |
-| `bill` | `b<uid>` | `name`, `amt`, `freq:"monthly"|"yearly"`, `day` (1–31, clamped to short months), `month` (1–12, yearly only), `cat`, `auto` (autopay), `since` (date added), `o` |
+| `bill` | `b<uid>` | `name`, `amt` (for "twice": the monthly total), `freq:"monthly"|"twice"|"yearly"`, `day` (1–31, clamped to short months), `day2` (twice only), `month` (1–12, yearly only), `cat`, `auto` (autopay), `since` (date added), `o` |
 | `paid` | `<billId>_<dueDate>` | `bill`, `name`, `due`, `amt`, `at` (date marked paid) |
 
 Old `events` collection from the XP version is unused. The app seeds defaults once, when `grp`, `act`, `cfg` are all empty: Fitness (Run, Lift), Practice (Drums, Songwriting, Intentional Game), Learning (Reading), Vitality (Creatine, Water goal, Hit sleep goal), Work (empty). "Hit sleep goal" has `auto:"sleep"`. Creatine and Water goal have `nt:true`.
@@ -80,7 +80,8 @@ The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.p
 **Bills** (own tab, not locked)
 - Tiles: next up, due in 7 days (unpaid, not autopay), per month (average), per year
 - "Upcoming" list sorted by next due date: name, category chip, repeat, amount, due label (red overdue, orange within 3 days), Paid button (not shown for autopay). "Edit bills" (`BE`) turns rows into inputs (name, amount, monthly/yearly, month, day, category, autopay) and ✕ (two taps)
-- Add form: name, amount, Monthly/Yearly (+ month), due day, category, autopay
+- Add form: name, amount, Monthly / Twice a month (+ 2nd day) / Yearly (+ month), due day, category, autopay
+- **Twice a month** (e.g. mortgage split in two): one bill, amount entered per month, each payment is half (`bpay`), due on `day` and `day2` every month; paying rolls to the other half. Yearly cost = monthly total × 12
 - Next due = earliest unpaid cycle on or after `since`; autopay cycles before today count as paid. Paying writes `paid/<billId>_<due>` and the bill rolls to the next cycle
 - "Yearly cost" bars per bill (monthly × 12) colored by category, with total. "Paid history" (last 20, ✕ to undo, two taps)
 
