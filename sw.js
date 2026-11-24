@@ -3,7 +3,7 @@ self.addEventListener("push", e => {
   let d = {};
   try { d = e.data.json() } catch (_) { d = { title: "Life of Pige", body: e.data ? e.data.text() : "" } }
   e.waitUntil(self.registration.showNotification(d.title || "Life of Pige", {
-    body: d.body || "", icon: "icon-180.png", badge: "icon-180.png", tag: "streak", data: { url: d.url || "./" }
+    body: d.body || "", icon: "icon-180.png", badge: "icon-180.png", tag: d.tag || "streak", data: { url: d.url || "./" }
   }));
 });
 self.addEventListener("notificationclick", e => {

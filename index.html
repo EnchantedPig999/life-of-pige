@@ -102,10 +102,17 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 .gl{display:flex;justify-content:space-between;color:var(--mut);font-size:12px;margin-top:-2px}
 .grp .act:first-child{border-top:0}.card>.ar:first-child{border-top:0}#streaks .warn{margin:0 0 10px}
 .m0{margin:0}#sh,#wh{flex:1;width:0}
+/* Bills */
+.bl{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.bl:first-child{border-top:0}
+.bl .bn{flex:1;min-width:0}.bl .bn b{font-size:17px;font-weight:600}.bl .bn small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
+.bl .ba{text-align:right;white-space:nowrap}.bl .ba b{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:15px}.bl .ba small{font-size:12px}
+.bc{display:inline-block;border-radius:8px;padding:0 7px;color:#1a0d14;font-size:11px;font-weight:700;margin-right:4px}
+.bl.ed{flex-wrap:wrap}.bl.ed input[type=number]{width:86px}.go.sm4{padding:7px 12px;font-size:14px}
+.due-o{color:#ff9aa8}.due-s{color:#ffb454}
 /* Month calendar */
 #cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 2px;text-align:center}#cal .w{font-size:11px;color:var(--mut)}
-#cal .d{width:36px;height:36px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:0;background:none;color:var(--tx);font-family:inherit;font-weight:600;padding:0;cursor:pointer}
-#cal .l1{background:rgba(255,111,159,.15)}#cal .l2{background:rgba(255,111,159,.35)}#cal .l3{background:#ff6f9f;color:#1a0610}#cal .l4{background:#ffd45e;color:#1a0610}#cal .fut{color:#5a4651;cursor:default}#cal .td{outline:1.5px dashed var(--ac);outline-offset:2px}.foot .x{font-size:13px}
+#cal .d{position:relative;width:36px;height:36px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:0;background:none;color:var(--tx);font-family:inherit;font-weight:600;padding:0;cursor:pointer}
+#cal .l1{background:rgba(255,111,159,.15)}#cal .l2{background:rgba(255,111,159,.35)}#cal .l3{background:#ff6f9f;color:#1a0610}#cal .l4{background:#ffd45e;color:#1a0610}#cal .fut{color:#5a4651;cursor:default}#cal .td{outline:1.5px dashed var(--ac);outline-offset:2px}#cal .bdue::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#a8d4f0;box-shadow:0 0 0 1px #0d0810}#cal .bdue.bp::after{background:#a9d6c9}.foot .x{font-size:13px}
 .dsk{display:none}
 /* ---------- Desktop only (phones never match this) ---------- */
 @media (min-width:1000px){
@@ -135,7 +142,7 @@ body:has(#bnav:not([hidden])) #brand{display:none}
 #today>.col:last-child{position:fixed;top:0;right:0;bottom:0;width:400px;overflow-y:auto;background:#140b13;border-left:1px solid var(--line);padding:32px 28px}
 /* Other tabs */
 .pg{margin-top:0}#trends>.seg,#recap>.seg{max-width:360px}#ttiles{max-width:720px}
-#rc .tg{grid-template-columns:repeat(4,minmax(0,1fr))}
+#rc .tg,#btiles{grid-template-columns:repeat(4,minmax(0,1fr))}
 .t[data-gsel]:hover{filter:brightness(1.05)}#cal .d:not(.fut):hover{outline:1px solid var(--ac)}
 #toast{bottom:64px}
 /* Footer pinned to the bottom middle of the main area on every tab */
@@ -178,9 +185,9 @@ body{--sl:200px}body:has(#today:not([hidden])){--rr:340px}#today.cols{height:cal
 <div class="g2"><div class="card m0"><div class="lab">Sleep (hrs)</div><div class="row" style="flex-wrap:nowrap"><input id="sh" type="number" step="0.25" min="0" max="16" placeholder="Hrs"><button class="go" id="sb">Save</button></div><div id="sn" class="sm mut" style="margin-top:6px"></div></div>
 <div class="card m0"><div class="lab">Weight (lbs)</div><div class="row" style="flex-wrap:nowrap"><input id="wh" type="number" step="0.1" min="0" placeholder="Lbs"><button class="go" id="wb">Save</button></div><div id="wn" class="sm mut" style="margin-top:6px"></div></div></div>
 <div class="hd"><h3 id="cml">Month</h3><div class="row"><button class="ic sm2" data-cm="-1">‹</button><button class="ic sm2" data-cm="1">›</button></div></div>
-<div class="card"><div id="cal"></div><div class="row sm mut" style="justify-content:center;margin-top:12px;gap:10px;white-space:nowrap"><span><span class="lgb" style="background:rgba(255,111,159,.15)"></span> &lt;20%</span><span><span class="lgb" style="background:rgba(255,111,159,.35)"></span> ≤40%</span><span><span class="lgb" style="background:#ff6f9f"></span> ≤60%</span><span><span class="lgb" style="background:#ffd45e"></span> &gt;60%</span></div></div>
+<div class="card"><div id="cal"></div><div class="row sm mut" style="justify-content:center;margin-top:12px;gap:10px;white-space:nowrap"><span><span class="lgb" style="background:rgba(255,111,159,.15)"></span> &lt;20%</span><span><span class="lgb" style="background:rgba(255,111,159,.35)"></span> ≤40%</span><span><span class="lgb" style="background:#ff6f9f"></span> ≤60%</span><span><span class="lgb" style="background:#ffd45e"></span> &gt;60%</span><span><span class="lgb" style="background:#a8d4f0;border-radius:50%;width:8px;height:8px"></span> bill</span></div></div>
 <div class="card" id="remp" style="margin-top:10px"><div class="row" style="justify-content:space-between"><div class="lab" style="margin:0">🔔 Streak reminders</div><span id="rems" class="sm mut"></span></div>
-<div class="sm mut" style="margin:6px 0 10px">A notification at this time, only on days a streak is about to end.</div>
+<div class="sm mut" style="margin:6px 0 10px">A notification at this time, only on days a streak is about to end or a bill is due within 3 days.</div>
 <div class="row"><select id="remh"></select><button class="go" id="remon">Turn on</button><button class="ghost" id="remoff" hidden>Turn off</button></div>
 <div id="remmsg" class="sm mut" style="margin-top:8px"></div></div>
 </div>
@@ -212,6 +219,20 @@ body{--sl:200px}body:has(#today:not([hidden])){--rr:340px}#today.cols{height:cal
 <div class="seg"><button class="tb" data-rv="week">Week</button><button class="tb" data-rv="month">Month</button></div>
 <div class="nav" style="margin-bottom:12px"><button class="ic" data-rn="-1">‹</button><b id="rl" style="min-width:170px;text-align:center"></b><button class="ic" data-rn="1" id="rnx">›</button></div>
 <div id="rc"></div></div>
+<div id="bills" hidden>
+<div class="row" style="justify-content:space-between"><div class="pg">BILLS</div><button class="ghost" id="bedit">Edit bills</button></div>
+<div class="tg" id="btiles"></div>
+<div class="cols"><div class="col">
+<div class="hd"><h3>Upcoming</h3></div><div class="card" id="blist"></div>
+<div class="card" id="badd"><div class="lab">Add a bill</div>
+<div class="row"><input id="nbn" placeholder="Name (e.g. Rent)" style="flex:1;min-width:150px"><input id="nba" type="number" step="0.01" min="0" placeholder="$ Amount" style="width:110px"></div>
+<div class="row" style="margin-top:8px"><select id="nbf"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select><select id="nbm" hidden><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select><input id="nbd" type="number" min="1" max="31" placeholder="Due day" style="width:96px"><select id="nbc"><option>Housing</option><option>Utilities</option><option>Phone &amp; internet</option><option>Subscriptions</option><option>Insurance</option><option>Loans &amp; cards</option><option>Transport</option><option>Other</option></select></div>
+<div class="row" style="margin-top:10px;justify-content:space-between"><label class="sm"><input type="checkbox" id="nbauto"> 🔁 Autopay</label><button class="go" data-addbill="1">Add bill</button></div></div>
+</div><div class="col">
+<div class="hd"><h3>Yearly cost</h3></div><div class="card" id="byr"></div>
+<div class="hd"><h3>Paid history</h3></div><div class="card" id="bhist"></div>
+</div></div>
+</div>
 <div id="fin" hidden>
 <div class="row" style="justify-content:space-between"><div class="pg">FINANCE</div><button class="ghost" id="fhide" hidden>🔒 Hide</button></div>
 <div class="card" id="flock" style="text-align:center;padding:26px 12px"><div style="font-size:30px">🔒</div><div class="mut" style="margin:6px 0 14px">Finance is hidden</div><button class="go" id="funhide">Unhide</button></div>
@@ -222,7 +243,7 @@ body{--sl:200px}body:has(#today:not([hidden])){--rr:340px}#today.cols{height:cal
 <div class="hd"><h3>🎯 Savings goals</h3></div><div id="fgoals"></div></div></div></div></div>
 <div class="foot sm mut"><span id="who"></span><br><button class="x" id="bk">Back up</button> · <button class="x" id="rsb">Restore</button> · <button class="x" id="so">Sign out</button><input type="file" id="rsf" accept="application/json,.json" hidden></div>
 </div></div>
-<nav id="bnav" hidden><button data-view="today"><i>🏠</i>Today</button><button data-view="trends"><i>📈</i>Trends</button><button data-view="prs"><i>🏆</i>PRs</button><button data-view="recap"><i>🗓️</i>Recap</button><button data-view="fin"><i id="fico">🔒</i>Finance</button></nav>
+<nav id="bnav" hidden><button data-view="today"><i>🏠</i>Today</button><button data-view="trends"><i>📈</i>Trends</button><button data-view="prs"><i>🏆</i>PRs</button><button data-view="recap"><i>🗓️</i>Recap</button><button data-view="bills"><i>💵</i>Bills</button><button data-view="fin"><i id="fico">🔒</i>Finance</button></nav>
 <div id="toast"></div>
 <script>
 const GOAL=8;
@@ -238,7 +259,8 @@ const fmt=m=>m>=60?Math.floor(m/60)+"h"+(m%60?" "+m%60+"m":""):m+"m";
 let VIEW="today",PR=[],PF="all",RV="week",RO=0,AC=[],BAL=[],GL=[],FE=false,FH=true,FM=today().slice(0,7);
 let G=[],A=[],L=new Map(),SL={},WT=[],CF=[],D=today(),EDIT=false,OPEN=null,ARM=null,PER="week",seen={},seeded=false,C={},tt;
 // Storage collection names (internal key -> stored name). Used for backup/restore.
-const PATH={grp:"grp",act:"act",log:"log",cfg:"cfg",sl:"sleep",wt:"weight",pr:"pr",acct:"acct",bal:"bal",goal:"goal",mood:"mood"},RAW={};
+const PATH={grp:"grp",act:"act",log:"log",cfg:"cfg",sl:"sleep",wt:"weight",pr:"pr",acct:"acct",bal:"bal",goal:"goal",mood:"mood",bill:"bill",paid:"paid"},RAW={};
+let BL=[],PAIDL=[],PAIDS=new Set(),BE=false;
 let MD={},GSEL=null,CM=null,CD=null,PRF="run";const PAL=["#a9d6c9","#ffb3cc","#f6dc8d","#cdbdf0","#ffc9a8","#a8d4f0"];const FACES=["😫","😕","😐","🙂","😄"];
 const done=(a,d)=>a.auto==="sleep"?(SL[d]!=null&&SL[d]>=GOAL):L.has(d+"_"+a.id);
 const mins=(a,d)=>(L.get(d+"_"+a.id)||{}).mins||0;
@@ -374,6 +396,32 @@ $("lnl").innerHTML=names.map(n=>`<option value="${esc(n)}">`).join("");
 const rows=PR.filter(x=>PF==="all"||(PF==="runs"?x.type==="run":x.type==="lift")).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.ts-a.ts);
 $("plog").innerHTML=rows.length?rows.map(x=>`<div class="le${(fl[x.id]||[]).length?" pr":""}"><div><b>${x.type==="run"?"🏃 Run":em(x.name)+" "+esc(x.name)}</b> ${x.type==="run"?mi(x.dist)+" · "+ft(x.secs)+" · "+fs(x.secs/x.dist)+" /mi":(x.w?x.w+" lbs × "+x.reps:x.reps+" reps")}${(fl[x.id]||[]).map(b=>`<span class="bd">🏆 ${b}</span>`).join("")}${cur.has(x.id)?'<span class="bd">👑</span>':""}<div class="d">${x.date}</div></div><button class="x" data-delpr="${x.id}">${ARM==="p"+x.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Nothing logged yet.</div>";
 document.querySelectorAll("[data-pf]").forEach(b=>b.classList.toggle("on",b.dataset.pf===PF))}
+// ---- Bills. Due-date rules are mirrored in reminders/send.mjs ----
+const CATS=["Housing","Utilities","Phone & internet","Subscriptions","Insurance","Loans & cards","Transport","Other"],MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const dim=(y,m)=>new Date(y,m,0).getDate(),bdue=(b,y,m)=>y+"-"+z(m)+"-"+z(Math.min(+b.day||1,dim(y,m)));
+// All due dates of a bill between two dates (monthly: day of every month, clamped to short months; yearly: month+day)
+function bcyc(b,from,to){const o=[];if(b.freq==="yearly"){for(let y=+from.slice(0,4);y<=+to.slice(0,4);y++){const d=bdue(b,y,+b.month||1);if(d>=from&&d<=to)o.push(d)}return o}
+let[y,m]=from.split("-").map(Number);for(let i=0;i<600;i++){const d=bdue(b,y,m);if(d>to)break;if(d>=from)o.push(d);if(++m>12){m=1;y++}}return o}
+// Next due date = earliest unpaid cycle since the bill was added (autopay: past cycles count as paid)
+function bnext(b){const T=today();for(const d of bcyc(b,b.since||T,addD(T,800))){if(b.auto&&d<T)continue;if(!PAIDS.has(b.id+"_"+d))return d}return null}
+const byear=b=>b.freq==="yearly"?+b.amt||0:(+b.amt||0)*12,usd2=n=>"$"+(+n||0).toLocaleString("en-US",{minimumFractionDigits:(+n%1)?2:0,maximumFractionDigits:2});
+const ddays=d=>Math.round((pd(d)-pd(today()))/864e5);
+const dlab=d=>{const n=ddays(d);return n<0?`Overdue · ${-n} day${n===-1?"":"s"}`:n===0?"Due today":n===1?"Due tomorrow":n<=6?"Due "+pd(d).toLocaleString("en-US",{weekday:"long"}):"Due "+fd(d)};
+const catc=c=>PAL[Math.max(0,CATS.indexOf(c))%PAL.length];
+function billMap(from,to){const m={};BL.forEach(b=>bcyc(b,from,to).forEach(d=>{if(d<(b.since||""))return;(m[d]=m[d]||[]).push({b,paid:PAIDS.has(b.id+"_"+d)||(b.auto&&d<today())})}));return m}
+function bills(){const T=today(),rows=BL.map(b=>({b,n:bnext(b)})).sort((x,y)=>(x.n||"9")<(y.n||"9")?-1:(x.n||"9")>(y.n||"9")?1:0);
+const yr=BL.reduce((s,b)=>s+byear(b),0),soon=rows.filter(r=>r.n&&!r.b.auto&&ddays(r.n)<=7),nx=rows.find(r=>r.n);
+let ti=0;const tile=(l,v,sm)=>`<div class="t" style="background:${PAL[ti++%4]}"><span class="tl2">${l}</span><b>${v}</b><small>${sm}</small></div>`;
+$("btiles").innerHTML=BL.length?tile("Next up",nx?esc(nx.b.name):"–",nx?fd(nx.n)+" · "+usd2(nx.b.amt):"")+tile("Due in 7 days",usd2(soon.reduce((s,r)=>s+(+r.b.amt||0),0)),soon.length+" bill"+(soon.length===1?"":"s")+" to pay")+tile("Per month",usd2(Math.round(yr/12)),"average")+tile("Per year",usd2(Math.round(yr)),BL.length+" bill"+(BL.length===1?"":"s")):"";
+$("bedit").textContent=BE?"Done":"Edit bills";$("bedit").hidden=!BL.length;
+const fsel=(b)=>`<select data-bfreq="${b.id}"><option value="monthly"${b.freq!=="yearly"?" selected":""}>Monthly</option><option value="yearly"${b.freq==="yearly"?" selected":""}>Yearly</option></select>`;
+$("blist").innerHTML=!BL.length?"<div class='mut sm'>No bills yet. Add one below.</div>":rows.map(({b,n})=>BE?
+`<div class="bl ed"><input class="an" data-bname="${b.id}" value="${esc(b.name)}" style="min-width:140px"><input type="number" step="0.01" min="0" data-bamt="${b.id}" value="${b.amt}">${fsel(b)}${b.freq==="yearly"?`<select data-bmon="${b.id}">${MONS.map((m,i)=>`<option value="${i+1}"${+b.month===i+1?" selected":""}>${m}</option>`).join("")}</select>`:""}<input type="number" min="1" max="31" data-bday="${b.id}" value="${b.day}" style="width:64px"><select data-bcat="${b.id}">${CATS.map(c=>`<option${c===b.cat?" selected":""}>${esc(c)}</option>`).join("")}</select><label class="sm"><input type="checkbox" data-bauto="${b.id}"${b.auto?" checked":""}> Autopay</label><button class="x" data-delbill="${b.id}">${ARM==="b"+b.id?"Tap again":"✕"}</button></div>`:
+`<div class="bl"><div class="bn"><b>${esc(b.name)}</b><small><span class="bc" style="background:${catc(b.cat)}">${esc(b.cat||"Other")}</span>${b.freq==="yearly"?"Yearly · "+MONS[(+b.month||1)-1]+" "+b.day:"Monthly · day "+b.day}${b.auto?" · 🔁 Autopay":""}</small></div><div class="ba"><b>${usd2(b.amt)}</b><small class="${n&&ddays(n)<0?"due-o":n&&ddays(n)<=3?"due-s":"mut"}">${n?dlab(n):""}</small></div>${b.auto||!n?"":`<button class="go sm4" data-bpay="${b.id}" data-due="${n}">Paid</button>`}</div>`).join("");
+const ys=[...BL].sort((a,b)=>byear(b)-byear(a)),ym=Math.max(1,...ys.map(byear));
+$("byr").innerHTML=!BL.length?"<div class='mut sm'>Add bills to see what they cost per year.</div>":ys.map(b=>`<div class="ar"><div>${esc(b.name)}<small>${b.freq==="yearly"?"yearly":usd2(b.amt)+" × 12"}</small></div><div class="bar"><i style="width:${byear(b)/ym*100}%;background:${catc(b.cat)}"></i></div><div class="tv">${usd2(Math.round(byear(b)))}</div></div>`).join("")+`<div class="ar" style="grid-template-columns:1fr auto"><div><b>Total per year</b></div><div class="tv">${usd2(Math.round(yr))}</div></div>`;
+const hs=[...PAIDL].sort((a,b)=>(b.at||"")<(a.at||"")?-1:(b.at||"")>(a.at||"")?1:(b.due<a.due?-1:1)).slice(0,20);
+$("bhist").innerHTML=hs.length?hs.map(p=>`<div class="le"><div>✓ ${esc(p.name||"Bill")} · ${usd2(p.amt)}<div class="d">due ${fd(p.due)} · paid ${fd(p.at||p.due)}</div></div><button class="x" data-delpaid="${p.id}">${ARM==="y"+p.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Bills you mark paid show up here.</div>"}
 // Desktop-only greeting header (hidden on phones)
 function dhead(){const h=new Date().getHours(),n=A.filter(a=>done(a,D)).length,best=Math.max(0,...A.map(streak)),rk=A.filter(risk).length;
 $("dhi").textContent=(h<12?"Good morning":h<17?"Good afternoon":"Good evening")+", Cameron 👋";
@@ -390,20 +438,21 @@ return`<button class="t${g.id===GSEL?" sel":""}" data-gsel="${g.id}" style="back
 function cal(){if(D!==CD){CD=D;CM=D.slice(0,7)}const[y,mo]=CM.split("-").map(Number),first=new Date(y,mo-1,1),off=(first.getDay()+6)%7,days=new Date(y,mo,0).getDate(),T=today(),tot=A.length||1;
 $("cml").textContent=first.toLocaleString("en-US",{month:"long",year:"numeric"});
 let h=["M","T","W","T","F","S","S"].map(x=>`<div class="w">${x}</div>`).join("")+"<div></div>".repeat(off);
-for(let i=1;i<=days;i++){const d=CM+"-"+z(i);if(d>T){h+=`<div class="d fut">${i}</div>`;continue}
-const c=A.filter(a=>done(a,d)).length,lv=!c?0:c/tot>.6?4:c/tot>.4?3:c/tot>=.2?2:1;h+=`<button class="d l${lv}${d===D?" td":""}" data-day="${d}" title="${c}/${A.length}${MD[d]&&MD[d].m?" · "+FACES[MD[d].m-1]:""}">${i}</button>`}
+const BM=billMap(CM+"-01",CM+"-"+z(days)),bt=d=>BM[d]?" · 💵 "+BM[d].map(x=>x.b.name).join(", "):"",bc=d=>BM[d]?" bdue"+(BM[d].every(x=>x.paid)?" bp":""):"";
+for(let i=1;i<=days;i++){const d=CM+"-"+z(i);if(d>T){h+=`<div class="d fut${bc(d)}" title="${esc(bt(d).slice(3))}">${i}</div>`;continue}
+const c=A.filter(a=>done(a,d)).length,lv=!c?0:c/tot>.6?4:c/tot>.4?3:c/tot>=.2?2:1;h+=`<button class="d l${lv}${d===D?" td":""}${bc(d)}" data-day="${d}" title="${c}/${A.length}${MD[d]&&MD[d].m?" · "+FACES[MD[d].m-1]:""}${esc(bt(d))}">${i}</button>`}
 $("cal").innerHTML=h}
 function moodCard(){const ae=document.activeElement;if($("mood").contains(ae)&&ae.tagName==="TEXTAREA")return;const x=MD[D]||{};
 $("mood").innerHTML=`<div class="lab">How's today?</div><div class="row" style="flex-wrap:nowrap">${FACES.map((f,i)=>`<button class="mf${x.m===i+1?" on":""}" data-mood="${i+1}" aria-label="Mood ${i+1} of 5">${f}</button>`).join("")}</div><textarea id="mnote" rows="2" placeholder="Note for the day (optional)">${esc(x.note||"")}</textarea>`}
 // Save mood/note for the open date; removes the doc when both are empty
 const saveMood=(m,note)=>{const o={};if(m)o.m=m;if(note)o.note=note;wr(()=>Object.keys(o).length?C.mood.doc(D).set(o):(MD[D]?C.mood.doc(D).delete():null))};
 function render(){if(!seen.ready)return;$("dt").value=D;
-["today","trends","prs","recap","fin"].forEach(v=>$(v).hidden=VIEW!==v);$("brand").hidden=VIEW!=="today";
+["today","trends","prs","recap","bills","fin"].forEach(v=>$(v).hidden=VIEW!==v);$("brand").hidden=VIEW!=="today";
 document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("on",b.dataset.view===VIEW));$("fico").textContent=FH?"🔒":"🔓";
 tiles();ring();moodCard();cal();
 $("edit").textContent=EDIT?"Done":"Edit lists";list();sw();trends();prs();
 $("frun").hidden=PRF!=="run";$("flift").hidden=PRF!=="lift";document.querySelectorAll("[data-prf]").forEach(b=>b.classList.toggle("on",b.dataset.prf===PRF));
-if(VIEW==="recap")recap();$("flock").hidden=!FH;$("fbody").hidden=FH;$("fhide").hidden=FH;if(VIEW==="fin"&&!FH)fin();
+if(VIEW==="recap")recap();if(VIEW==="bills")bills();$("flock").hidden=!FH;$("fbody").hidden=FH;$("fhide").hidden=FH;if(VIEW==="fin"&&!FH)fin();
 $("rsb").textContent=ARM==="restore"?"Tap again: replaces ALL data":"Restore"}
 async function seed(){await wr(async()=>{let o=0;for(let gi=0;gi<DEF.length;gi++){await C.grp.doc("g"+gi).set({name:DEF[gi][0],o:++o});for(let ai=0;ai<DEF[gi][1].length;ai++){const nm=DEF[gi][1][ai],x={name:nm,g:"g"+gi,o:++o};if(nm==="Hit sleep goal")x.auto="sleep";if(nm==="Creatine"||nm==="Water goal")x.nt=true;await C.act.doc("a"+gi+"_"+ai).set(x)}}await C.cfg.doc("seeded").set({v:1})})}
 const uid=()=>Date.now()+""+Math.floor(Math.random()*1000);
@@ -433,6 +482,13 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,[data-day
 if(t.id!=="rsb"&&ARM==="restore"){ARM=null;render()}
 if(t.id==="edit"){EDIT=!EDIT;ARM=null;OPEN=null;render()}
 else if(t.id==="bk")backup()
+else if(t.id==="bedit"){BE=!BE;ARM=null;render()}
+else if(d.bpay){const b=BL.find(x=>x.id===d.bpay);if(b)wr(async()=>{await C.paid.doc(b.id+"_"+d.due).set({bill:b.id,name:b.name,due:d.due,amt:+b.amt||0,at:today()});toast("Marked paid ✓")})}
+else if(d.addbill){const name=$("nbn").value.trim(),amt=parseFloat($("nba").value),day=parseInt($("nbd").value),freq=$("nbf").value;
+if(!name||!(amt>=0)||!(day>=1&&day<=31))return toast("Enter name, amount and due day (1–31)");
+wr(async()=>{await C.bill.doc("b"+uid()).set({name,amt,freq,day,month:freq==="yearly"?+$("nbm").value:0,cat:$("nbc").value,auto:$("nbauto").checked,since:today(),o:Date.now()});$("nbn").value=$("nba").value=$("nbd").value="";$("nbauto").checked=false;toast("Bill added")})}
+else if(d.delbill){const k="b"+d.delbill;if(ARM!==k){ARM=k;render();return}ARM=null;wr(()=>C.bill.doc(d.delbill).delete())}
+else if(d.delpaid){const k="y"+d.delpaid;if(ARM!==k){ARM=k;render();return}ARM=null;wr(()=>C.paid.doc(d.delpaid).delete())}
 else if(t.id==="remon")remOn()
 else if(t.id==="remoff")remOff()
 else if(t.id==="rsb"){if(ARM!=="restore"){ARM="restore";render();return}ARM=null;render();$("rsf").click()}
@@ -473,6 +529,14 @@ if(d.delact)wr(()=>C.act.doc(d.delact).delete());else wr(async()=>{for(const a o
 document.addEventListener("change",e=>{const t=e.target,d=t.dataset;
 if(t.id==="dt"){if(t.value){D=t.value;render()}}
 else if(t.id==="mnote"){const x=MD[D]||{},v=t.value.trim();if(v!==(x.note||""))saveMood(x.m||0,v)}
+else if(t.id==="nbf")$("nbm").hidden=t.value!=="yearly"
+else if(d.bname){const v=t.value.trim();if(v)wr(()=>C.bill.doc(d.bname).update({name:v}))}
+else if(d.bamt){const v=parseFloat(t.value);if(v>=0)wr(()=>C.bill.doc(d.bamt).update({amt:v}))}
+else if(d.bday){const v=parseInt(t.value);if(v>=1&&v<=31)wr(()=>C.bill.doc(d.bday).update({day:v}))}
+else if(d.bfreq)wr(()=>C.bill.doc(d.bfreq).update({freq:t.value,month:t.value==="yearly"?(new Date().getMonth()+1):0}))
+else if(d.bmon)wr(()=>C.bill.doc(d.bmon).update({month:+t.value}))
+else if(d.bcat)wr(()=>C.bill.doc(d.bcat).update({cat:t.value}))
+else if(d.bauto)wr(()=>C.bill.doc(d.bauto).update({auto:t.checked}))
 else if(t.id==="remh"){if(PUSH&&PUSH.on)wr(async()=>{await C.push.doc("main").update({hour:+t.value});toast("Reminder time saved")})}
 else if(t.id==="rsf"){const f=t.files&&t.files[0];t.value="";if(f)restore(f)}
 else if(d.ren){const v=t.value.trim();if(v)wr(()=>C.act.doc(d.ren).update({name:v}))}
@@ -499,7 +563,7 @@ $("msg").hidden=true;$("auth").hidden=true;$("app").hidden=false;$("bnav").hidde
 sub("grp",x=>G=x.sort(by));sub("act",x=>A=x.sort(by));sub("cfg",x=>CF=x);
 sub("log",x=>L=new Map(x.map(y=>[y.id,y])));
 sub("sl",x=>{SL={};x.forEach(y=>SL[y.id]=y.hours)});
-sub("wt",x=>WT=x.sort((a,b)=>a.id<b.id?-1:1));sub("pr",x=>PR=x);sub("acct",x=>AC=x.sort(by));sub("bal",x=>BAL=x);sub("goal",x=>GL=x.sort(by));sub("mood",x=>{MD={};x.forEach(y=>MD[y.id]=y)});
+sub("wt",x=>WT=x.sort((a,b)=>a.id<b.id?-1:1));sub("pr",x=>PR=x);sub("acct",x=>AC=x.sort(by));sub("bal",x=>BAL=x);sub("goal",x=>GL=x.sort(by));sub("mood",x=>{MD={};x.forEach(y=>MD[y.id]=y)});sub("bill",x=>BL=x.sort(by));sub("paid",x=>{PAIDL=x;PAIDS=new Set(x.map(y=>y.id))});
 C.push=col("push");C.push.onSnapshot(s=>{const d=s.docs.find(y=>y.id==="main");PUSH=d?d.data():null;remUI()});
 render()}
 </script>

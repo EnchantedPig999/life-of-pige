@@ -71,24 +71,44 @@ const done = (a, d) => a.auto === "sleep" ? (SL[d] != null && SL[d] >= GOAL) : L
 const streak = a => { let d = TODAY, g = 0, f = null; if (!done(a, d)) d = addD(d, -1); for (let i = 0; i < 3650; i++) { if (done(a, d)) { f = d; g = 0 } else if (++g >= GAP) break; d = addD(d, -1) } return f ? diff(TODAY, f) + 1 : 0; };
 const risk = acts.map(a => ({ a, k: streak(a) })).filter(x => x.k > 0 && !done(x.a, TODAY) && !done(x.a, addD(TODAY, -1)) && !done(x.a, addD(TODAY, -2))).sort((x, y) => y.k - x.k);
 
-let msg = null;
-// Keep it short: name at most 2 tasks, no streak counts
-const names = risk.map(x => x.a.name), more = names.length - 2;
-if (risk.length === 1) msg = { title: `🔥 ${names[0]} streak ends today`, body: "Tap to keep it going.", url: SITE };
-else if (risk.length) msg = { title: `🔥 ${risk.length} streaks end today`, body: (more > 0 ? `${names[0]}, ${names[1]} +${more} more` : `${names[0]} & ${names[1]}`) + ". Tap to keep them going.", url: SITE };
-else if (FORCE) msg = { title: "🐷 Reminders are working", body: "This is a test. You'll only get these when a streak is about to end.", url: SITE };
-if (!msg) { console.log("No streaks at risk today."); await patch("push", "main", { lastSent: TODAY }); process.exit(0); }
+// ---- Bills (same due-date rules as the app): unpaid, not autopay, due within 3 days or overdue ----
+const [bills, paids] = await Promise.all([list("bill"), list("paid")]);
+const PS = new Set(paids.map(p => p.id)), z2 = n => String(n).padStart(2, "0");
+const dim = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();
+const bdue = (b, y, m) => `${y}-${z2(m)}-${z2(Math.min(+b.day || 1, dim(y, m)))}`;
+function bcyc(b, from, to) {
+  const o = [];
+  if (b.freq === "yearly") { for (let y = +from.slice(0, 4); y <= +to.slice(0, 4); y++) { const d = bdue(b, y, +b.month || 1); if (d >= from && d <= to) o.push(d) } return o }
+  let [y, m] = from.split("-").map(Number);
+  for (let i = 0; i < 600; i++) { const d = bdue(b, y, m); if (d > to) break; if (d >= from) o.push(d); if (++m > 12) { m = 1; y++ } }
+  return o;
+}
+const bnext = b => { for (const d of bcyc(b, b.since || TODAY, addD(TODAY, 800))) { if (b.auto && d < TODAY) continue; if (!PS.has(b.id + "_" + d)) return d } return null };
+const due = bills.filter(b => !b.auto).map(b => ({ b, d: bnext(b) })).filter(x => x.d && diff(x.d, TODAY) <= 3).sort((x, y) => x.d < y.d ? -1 : 1);
+
+// ---- Messages (short: at most 2 names) ----
+const two = n => n.length > 2 ? `${n[0]}, ${n[1]} +${n.length - 2} more` : n.join(" & ");
+const usd = n => "$" + (+n || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const when = d => { const n = diff(d, TODAY); return n === 0 ? "today" : n === 1 ? "tomorrow" : new Date(d + "T12:00:00Z").toLocaleString("en-US", { weekday: "long", timeZone: "UTC" }) };
+const msgs = [];
+const names = risk.map(x => x.a.name);
+if (risk.length === 1) msgs.push({ title: `🔥 ${names[0]} streak ends today`, body: "Tap to keep it going.", url: SITE, tag: "streak" });
+else if (risk.length) msgs.push({ title: `🔥 ${risk.length} streaks end today`, body: two(names) + ". Tap to keep them going.", url: SITE, tag: "streak" });
+const over = due.filter(x => x.d < TODAY);
+if (due.length === 1) { const { b, d } = due[0]; msgs.push(d < TODAY ? { title: `⚠️ ${b.name} is overdue`, body: `${usd(b.amt)} · Tap to mark it paid.`, url: SITE, tag: "bill" } : { title: `💵 ${b.name} due ${when(d)}`, body: `${usd(b.amt)} · Tap to mark it paid.`, url: SITE, tag: "bill" }); }
+else if (due.length) msgs.push({ title: over.length ? `⚠️ ${due.length} bills need paying` : `💵 ${due.length} bills due soon`, body: two(due.map(x => x.b.name)) + ".", url: SITE, tag: "bill" });
+if (!msgs.length && FORCE) msgs.push({ title: "🐷 Reminders are working", body: "This is a test. You'll get these when a streak is about to end or a bill is due.", url: SITE, tag: "test" });
+if (!msgs.length) { console.log("No streaks at risk and no bills due."); await patch("push", "main", { lastSent: TODAY }); process.exit(0); }
 
 // ---- Send ----
-console.log("Message:", msg.title, "-", msg.body);
+msgs.forEach(m => console.log("Message:", m.title, "-", m.body));
 // Secrets pasted into GitHub can pick up spaces, line breaks or quotes; keep only URL-safe base64 characters
 const clean = k => String(k || "").replace(/[^A-Za-z0-9_-]/g, "");
 const VPRIV = clean(process.env.VAPID_PRIVATE);
 if (VPRIV.length !== 43) { console.error(`VAPID_PRIVATE looks wrong (${VPRIV.length} characters after cleanup, expected 43). Re-paste it in GitHub secrets.`); process.exit(1); }
 webpush.setVapidDetails(SITE, clean(process.env.VAPID_PUBLIC), VPRIV);
 try {
-  await webpush.sendNotification(JSON.parse(push.sub), JSON.stringify(msg), { TTL: 6 * 3600 });
-  console.log("Sent:", msg.title);
+  for (const m of msgs) { await webpush.sendNotification(JSON.parse(push.sub), JSON.stringify(m), { TTL: 6 * 3600 }); console.log("Sent:", m.title); }
   await patch("push", "main", { lastSent: TODAY });
 } catch (e) {
   console.error("Push failed:", e.statusCode, e.body || e.message);

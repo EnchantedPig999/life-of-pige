@@ -38,17 +38,19 @@ Firebase JS SDK (v10.12.2, loaded from gstatic) in the module script at the bott
 | `bal` | `<YYYY-MM>_<acctId>` | `m`, `acct`, `amt` |
 | `goal` | `q<uid>` | `name`, `target`, `acct` ("" = manual), `manual`, `o` |
 | `mood` | `<date>` | optional `m` (1–5), optional `note` (doc deleted when both empty) |
+| `bill` | `b<uid>` | `name`, `amt`, `freq:"monthly"|"yearly"`, `day` (1–31, clamped to short months), `month` (1–12, yearly only), `cat`, `auto` (autopay), `since` (date added), `o` |
+| `paid` | `<billId>_<dueDate>` | `bill`, `name`, `due`, `amt`, `at` (date marked paid) |
 
 Old `events` collection from the XP version is unused. The app seeds defaults once, when `grp`, `act`, `cfg` are all empty: Fitness (Run, Lift), Practice (Drums, Songwriting, Intentional Game), Learning (Reading), Vitality (Creatine, Water goal, Hit sleep goal), Work (empty). "Hit sleep goal" has `auto:"sleep"`. Creatine and Water goal have `nt:true`.
 
 ## Streak reminders (Web Push, no paid plan)
 - App: "🔔 Streak reminders" card at the bottom of the Today tab (after the calendar). Turn on asks for notification permission (iPhone needs iOS 16.4+ and the app opened from the home-screen icon), subscribes with the public VAPID key and saves `users/<uid>/push/main` = `{on, sub (JSON string), tz, hour, lastSent}`. `push` is not part of Back up/Restore
-- GitHub Actions runs `reminders/send.mjs` hourly (minute 7). It reads Firestore with a service account, works out the local date/hour from `tz`, and once the hour is reached sends one notification if any streak is at risk (same rules as the app), then sets `lastSent`. Expired subscriptions (404/410) set `on:false`
+- GitHub Actions runs `reminders/send.mjs` hourly (minute 7). It reads Firestore with a service account, works out the local date/hour from `tz`, and once the hour is reached sends up to two notifications (tags `streak` and `bill`): streaks at risk (same rules as the app) and bills that are unpaid, not autopay, and due within 3 days or overdue (same due-date rules as the app; keep both copies in sync). Then it sets `lastSent`. Expired subscriptions (404/410) set `on:false`
 - Secrets in GitHub (Settings → Secrets → Actions): `FIREBASE_SA` (service account JSON), `VAPID_PRIVATE`. Public VAPID key and owner UID are in the workflow file and `index.html`
 - Manual test: Actions → Streak reminders → Run workflow (force = sends a test notification even if nothing is at risk)
 - A keep-alive step re-enables the workflow each run so GitHub doesn't pause it after 60 days
 
-## Views (bottom tab bar `#bnav`: Today | Trends | PRs | Recap | Finance; `VIEW` holds the current one)
+## Views (bottom tab bar `#bnav`: Today | Trends | PRs | Recap | Bills | Finance; `VIEW` holds the current one)
 The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.pg`). Footer (signed in as, Back up, Restore, Sign out) sits under every tab.
 
 **Today**
@@ -58,7 +60,7 @@ The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.p
 - Group tiles (pastel, one per group): done/total, top current streak in that group, progress bar, ⚠️ when a task in it is at risk. Tapping a tile selects it (`GSEL`) and the checklist shows only that group. "Edit lists" shows all groups for editing
 - Checklist: tap the box to mark done; "+ time" opens Hrs/Min. Edit lists: add, rename, move, delete groups and tasks (delete needs two taps), toggle ⏱ time per task. Per-task streak badge with warning
 - Sleep and weight: two small cards with input + Save
-- Month calendar (replaced the 17-week heatmap): `CM` = shown month, follows the open date; ‹ › change month; tap a day to open it
+- Month calendar (replaced the 17-week heatmap): `CM` = shown month, follows the open date; ‹ › change month; tap a day to open it. Small dot under days with a bill due (sky = unpaid, mint = paid/autopay)
 
 **Trends**
 - Week/Month switch. Tiles: days active and time logged vs the same number of days last week/month
@@ -74,6 +76,13 @@ The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.p
 
 **Recap**
 - Week/Month toggle with arrows. Pastel tiles: days active, check-offs, time logged, PRs hit, plus avg sleep, avg mood, weight change and best day (most check-offs) when data exists. Compares with the same number of days in the previous period. Lists PRs hit
+
+**Bills** (own tab, not locked)
+- Tiles: next up, due in 7 days (unpaid, not autopay), per month (average), per year
+- "Upcoming" list sorted by next due date: name, category chip, repeat, amount, due label (red overdue, orange within 3 days), Paid button (not shown for autopay). "Edit bills" (`BE`) turns rows into inputs (name, amount, monthly/yearly, month, day, category, autopay) and ✕ (two taps)
+- Add form: name, amount, Monthly/Yearly (+ month), due day, category, autopay
+- Next due = earliest unpaid cycle on or after `since`; autopay cycles before today count as paid. Paying writes `paid/<billId>_<due>` and the bill rolls to the next cycle
+- "Yearly cost" bars per bill (monthly × 12) colored by category, with total. "Paid history" (last 20, ✕ to undo, two taps)
 
 **Finance** (hidden behind a 🔒 Unhide button by default; re-locks when leaving the tab or reloading. This is not real security, no passcode)
 - Accounts are Assets or Debts. Monthly checkpoint: enter each account's balance for a chosen month; empty boxes keep the previous value (carry-forward)
