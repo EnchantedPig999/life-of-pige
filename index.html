@@ -105,7 +105,7 @@ textarea{width:100%;margin-top:10px;font-family:inherit;font-weight:600;font-siz
 /* Bills */
 .bl{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.bl:first-child{border-top:0}
 .bl .bn{flex:1;min-width:0}.bl .bn b{font-size:17px;font-weight:600}.bl .bn small{display:block;font-size:12px;color:var(--mut);margin-top:2px}
-.bl .ba{text-align:right;white-space:nowrap}.bl .ba b{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:15px}.bl .ba small{font-size:12px}
+.bl .ba{text-align:right;white-space:nowrap}.bl .ba b{display:block;font-family:Orbitron,Rajdhani,Arial,sans-serif;font-size:15px}.bl .ba small{display:block;font-size:12px}.xp{color:#7be3a4}
 .bc{display:inline-block;border-radius:8px;padding:0 7px;color:#1a0d14;font-size:11px;font-weight:700;margin-right:4px}
 .bl.ed{flex-wrap:wrap}.bl.ed input[type=number]{width:86px}.go.sm4{padding:7px 12px;font-size:14px}
 .due-o{color:#ff9aa8}.due-s{color:#ffb454}
@@ -227,9 +227,11 @@ body{--sl:200px}body:has(#today:not([hidden])){--rr:340px}#today.cols{height:cal
 <div class="card" id="badd"><div class="lab">Add a bill</div>
 <div class="row"><input id="nbn" placeholder="Name (e.g. Rent)" style="flex:1;min-width:150px"><input id="nba" type="number" step="0.01" min="0" placeholder="$ Amount" style="width:110px"></div>
 <div class="row" style="margin-top:8px"><select id="nbf"><option value="monthly">Monthly</option><option value="twice">Twice a month</option><option value="yearly">Yearly</option></select><select id="nbm" hidden><option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option><option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option><option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option><option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option></select><input id="nbd" type="number" min="1" max="31" placeholder="Due day" style="width:96px"><input id="nbd2" type="number" min="1" max="31" placeholder="2nd day" style="width:96px" hidden><select id="nbc"><option>Housing</option><option>Utilities</option><option>Phone &amp; internet</option><option>Subscriptions</option><option>Insurance</option><option>Loans &amp; cards</option><option>Transport</option><option>Other</option></select></div>
+<div class="row" style="margin-top:8px"><input id="nbx" type="number" step="0.01" min="0" placeholder="Extra principal per payment (optional)" style="flex:1;min-width:200px"></div>
 <div class="row" style="margin-top:10px;justify-content:space-between"><label class="sm"><input type="checkbox" id="nbauto"> 🔁 Autopay</label><button class="go" data-addbill="1">Add bill</button></div></div>
 </div><div class="col">
 <div class="hd"><h3>Yearly cost</h3></div><div class="card" id="byr"></div>
+<div id="bxw" hidden><div class="hd"><h3>💪 Extra principal</h3></div><div class="card" id="bext"></div></div>
 <div class="hd"><h3>Paid history</h3></div><div class="card" id="bhist"></div>
 </div></div>
 </div>
@@ -260,7 +262,7 @@ let VIEW="today",PR=[],PF="all",RV="week",RO=0,AC=[],BAL=[],GL=[],FE=false,FH=tr
 let G=[],A=[],L=new Map(),SL={},WT=[],CF=[],D=today(),EDIT=false,OPEN=null,ARM=null,PER="week",seen={},seeded=false,C={},tt;
 // Storage collection names (internal key -> stored name). Used for backup/restore.
 const PATH={grp:"grp",act:"act",log:"log",cfg:"cfg",sl:"sleep",wt:"weight",pr:"pr",acct:"acct",bal:"bal",goal:"goal",mood:"mood",bill:"bill",paid:"paid"},RAW={};
-let BL=[],PAIDL=[],PAIDS=new Set(),BE=false;
+let BL=[],PAIDL=[],PAIDS=new Set(),BE=false,PAYX=null;
 let MD={},GSEL=null,CM=null,CD=null,PRF="run";const PAL=["#a9d6c9","#ffb3cc","#f6dc8d","#cdbdf0","#ffc9a8","#a8d4f0"];const FACES=["😫","😕","😐","🙂","😄"];
 const done=(a,d)=>a.auto==="sleep"?(SL[d]!=null&&SL[d]>=GOAL):L.has(d+"_"+a.id);
 const mins=(a,d)=>(L.get(d+"_"+a.id)||{}).mins||0;
@@ -404,7 +406,7 @@ function bcyc(b,from,to){const o=[];if(b.freq==="yearly"){for(let y=+from.slice(
 let[y,m]=from.split("-").map(Number);for(let i=0;i<600;i++){const ds=[...new Set([bdue(b,y,m),...(b.freq==="twice"?[bdue({day:b.day2||15},y,m)]:[])])].sort();if(ds[0]>to)break;ds.forEach(d=>{if(d>=from&&d<=to)o.push(d)});if(++m>12){m=1;y++}}return o}
 // Next due date = earliest unpaid cycle since the bill was added (autopay: past cycles count as paid)
 function bnext(b){const T=today();for(const d of bcyc(b,b.since||T,addD(T,800))){if(b.auto&&d<T)continue;if(!PAIDS.has(b.id+"_"+d))return d}return null}
-const bpay=b=>b.freq==="twice"?(+b.amt||0)/2:+b.amt||0,byear=b=>b.freq==="yearly"?+b.amt||0:(+b.amt||0)*12,usd2=n=>"$"+(+n||0).toLocaleString("en-US",{minimumFractionDigits:(+n%1)?2:0,maximumFractionDigits:2});
+const bpay=b=>b.freq==="twice"?(+b.amt||0)/2:+b.amt||0,bamt=b=>bpay(b)+(+b.extra||0),bper=b=>b.freq==="yearly"?1:b.freq==="twice"?24:12,byear=b=>b.freq==="yearly"?+b.amt||0:(+b.amt||0)*12,usd2=n=>"$"+(+n||0).toLocaleString("en-US",{minimumFractionDigits:(+n%1)?2:0,maximumFractionDigits:2});
 const ddays=d=>Math.round((pd(d)-pd(today()))/864e5);
 const dlab=d=>{const n=ddays(d);return n<0?`Overdue · ${-n} day${n===-1?"":"s"}`:n===0?"Due today":n===1?"Due tomorrow":n<=6?"Due "+pd(d).toLocaleString("en-US",{weekday:"long"}):"Due "+fd(d)};
 const catc=c=>PAL[Math.max(0,CATS.indexOf(c))%PAL.length];
@@ -412,16 +414,20 @@ function billMap(from,to){const m={};BL.forEach(b=>bcyc(b,from,to).forEach(d=>{i
 function bills(){const T=today(),rows=BL.map(b=>({b,n:bnext(b)})).sort((x,y)=>(x.n||"9")<(y.n||"9")?-1:(x.n||"9")>(y.n||"9")?1:0);
 const yr=BL.reduce((s,b)=>s+byear(b),0),soon=rows.filter(r=>r.n&&!r.b.auto&&ddays(r.n)<=7),nx=rows.find(r=>r.n);
 let ti=0;const tile=(l,v,sm)=>`<div class="t" style="background:${PAL[ti++%4]}"><span class="tl2">${l}</span><b>${v}</b><small>${sm}</small></div>`;
-$("btiles").innerHTML=BL.length?tile("Next up",nx?esc(nx.b.name):"–",nx?fd(nx.n)+" · "+usd2(bpay(nx.b)):"")+tile("Due in 7 days",usd2(soon.reduce((s,r)=>s+bpay(r.b),0)),soon.length+" bill"+(soon.length===1?"":"s")+" to pay")+tile("Per month",usd2(Math.round(yr/12)),"average")+tile("Per year",usd2(Math.round(yr)),BL.length+" bill"+(BL.length===1?"":"s")):"";
+$("btiles").innerHTML=BL.length?tile("Next up",nx?esc(nx.b.name):"–",nx?fd(nx.n)+" · "+usd2(bamt(nx.b)):"")+tile("Due in 7 days",usd2(soon.reduce((s,r)=>s+bamt(r.b),0)),soon.length+" bill"+(soon.length===1?"":"s")+" to pay")+tile("Per month",usd2(Math.round(yr/12)),"average")+tile("Per year",usd2(Math.round(yr)),BL.length+" bill"+(BL.length===1?"":"s")):"";
 $("bedit").textContent=BE?"Done":"Edit bills";$("bedit").hidden=!BL.length;
 const fsel=(b)=>`<select data-bfreq="${b.id}">${[["monthly","Monthly"],["twice","Twice a month"],["yearly","Yearly"]].map(([v,l])=>`<option value="${v}"${(b.freq||"monthly")===v?" selected":""}>${l}</option>`).join("")}</select>`;
 $("blist").innerHTML=!BL.length?"<div class='mut sm'>No bills yet. Add one below.</div>":rows.map(({b,n})=>BE?
-`<div class="bl ed"><input class="an" data-bname="${b.id}" value="${esc(b.name)}" style="min-width:140px"><input type="number" step="0.01" min="0" data-bamt="${b.id}" value="${b.amt}">${fsel(b)}${b.freq==="yearly"?`<select data-bmon="${b.id}">${MONS.map((m,i)=>`<option value="${i+1}"${+b.month===i+1?" selected":""}>${m}</option>`).join("")}</select>`:""}<input type="number" min="1" max="31" data-bday="${b.id}" value="${b.day}" style="width:64px">${b.freq==="twice"?`<input type="number" min="1" max="31" data-bday2="${b.id}" value="${b.day2||15}" style="width:64px">`:""}<select data-bcat="${b.id}">${CATS.map(c=>`<option${c===b.cat?" selected":""}>${esc(c)}</option>`).join("")}</select><label class="sm"><input type="checkbox" data-bauto="${b.id}"${b.auto?" checked":""}> Autopay</label><button class="x" data-delbill="${b.id}">${ARM==="b"+b.id?"Tap again":"✕"}</button></div>`:
-`<div class="bl"><div class="bn"><b>${esc(b.name)}</b><small><span class="bc" style="background:${catc(b.cat)}">${esc(b.cat||"Other")}</span>${b.freq==="yearly"?"Yearly · "+MONS[(+b.month||1)-1]+" "+b.day:b.freq==="twice"?"Twice a month · days "+Math.min(b.day,b.day2||15)+" & "+Math.max(b.day,b.day2||15)+" · "+usd2(b.amt)+"/mo":"Monthly · day "+b.day}${b.auto?" · 🔁 Autopay":""}</small></div><div class="ba"><b>${usd2(bpay(b))}</b><small class="${n&&ddays(n)<0?"due-o":n&&ddays(n)<=3?"due-s":"mut"}">${n?dlab(n):""}</small></div>${b.auto||!n?"":`<button class="go sm4" data-bpay="${b.id}" data-due="${n}">Paid</button>`}</div>`).join("");
+`<div class="bl ed"><input class="an" data-bname="${b.id}" value="${esc(b.name)}" style="min-width:140px"><input type="number" step="0.01" min="0" data-bamt="${b.id}" value="${b.amt}">${fsel(b)}${b.freq==="yearly"?`<select data-bmon="${b.id}">${MONS.map((m,i)=>`<option value="${i+1}"${+b.month===i+1?" selected":""}>${m}</option>`).join("")}</select>`:""}<input type="number" min="1" max="31" data-bday="${b.id}" value="${b.day}" style="width:64px">${b.freq==="twice"?`<input type="number" min="1" max="31" data-bday2="${b.id}" value="${b.day2||15}" style="width:64px">`:""}<input type="number" step="0.01" min="0" data-bextra="${b.id}" value="${+b.extra>0?b.extra:""}" placeholder="Extra" title="Extra principal per payment"><select data-bcat="${b.id}">${CATS.map(c=>`<option${c===b.cat?" selected":""}>${esc(c)}</option>`).join("")}</select><label class="sm"><input type="checkbox" data-bauto="${b.id}"${b.auto?" checked":""}> Autopay</label><button class="x" data-delbill="${b.id}">${ARM==="b"+b.id?"Tap again":"✕"}</button></div>`:
+`<div class="bl"><div class="bn"><b>${esc(b.name)}</b><small><span class="bc" style="background:${catc(b.cat)}">${esc(b.cat||"Other")}</span>${b.freq==="yearly"?"Yearly · "+MONS[(+b.month||1)-1]+" "+b.day:b.freq==="twice"?"Twice a month · days "+Math.min(b.day,b.day2||15)+" & "+Math.max(b.day,b.day2||15)+" · "+usd2(b.amt)+"/mo":"Monthly · day "+b.day}${b.auto?" · 🔁 Autopay":""}</small></div><div class="ba"><b>${usd2(bpay(b))}</b>${+b.extra>0?`<small class="xp">+ ${usd2(b.extra)} extra</small>`:""}<small class="${n&&ddays(n)<0?"due-o":n&&ddays(n)<=3?"due-s":"mut"}">${n?dlab(n):""}</small></div>${b.auto||!n?"":`<button class="go sm4" data-bpay="${b.id}" data-due="${n}">Paid</button>`}</div>${PAYX===b.id&&n?`<div class="row" style="padding:0 0 10px;justify-content:flex-end"><span class="sm mut">💪 Extra principal $</span><input id="px_${b.id}" type="number" step="0.01" min="0" value="${+b.extra||0}" style="width:96px"><button class="go sm4" data-bpay="${b.id}" data-due="${n}" data-ok="1">Confirm</button><button class="x" data-bpayx="1">Cancel</button></div>`:""}`).join("");
 const ys=[...BL].sort((a,b)=>byear(b)-byear(a)),ym=Math.max(1,...ys.map(byear));
-$("byr").innerHTML=!BL.length?"<div class='mut sm'>Add bills to see what they cost per year.</div>":ys.map(b=>`<div class="ar"><div>${esc(b.name)}<small>${b.freq==="yearly"?"yearly":usd2(b.amt)+(b.freq==="twice"?"/mo":"")+" × 12"}</small></div><div class="bar"><i style="width:${byear(b)/ym*100}%;background:${catc(b.cat)}"></i></div><div class="tv">${usd2(Math.round(byear(b)))}</div></div>`).join("")+`<div class="ar" style="grid-template-columns:1fr auto"><div><b>Total per year</b></div><div class="tv">${usd2(Math.round(yr))}</div></div>`;
+$("byr").innerHTML=!BL.length?"<div class='mut sm'>Add bills to see what they cost per year.</div>":ys.map(b=>`<div class="ar"><div>${esc(b.name)}<small>${b.freq==="yearly"?"yearly":usd2(b.amt)+(b.freq==="twice"?"/mo":"")+" × 12"}</small></div><div class="bar"><i style="width:${byear(b)/ym*100}%;background:${catc(b.cat)}"></i></div><div class="tv">${usd2(Math.round(byear(b)))}</div></div>`).join("")+`<div class="ar" style="grid-template-columns:1fr auto"><div><b>Total per year</b></div><div class="tv">${usd2(Math.round(yr))}</div></div>`+(BL.some(b=>+b.extra>0)?`<div class="ar" style="grid-template-columns:1fr auto"><div class="xp">+ planned extra principal</div><div class="tv xp">${usd2(Math.round(BL.reduce((s,b)=>s+(+b.extra||0)*bper(b),0)))}</div></div>`:"");
+// Extra principal card: planned per payment, paid this year and all-time, per bill
+const xb=BL.filter(b=>+b.extra>0||PAIDL.some(p=>p.bill===b.id&&+p.extra>0)),Y=today().slice(0,4),xsum=f=>PAIDL.filter(f).reduce((s,p)=>s+(+p.extra||0),0);
+$("bxw").hidden=!xb.length&&!PAIDL.some(p=>+p.extra>0);
+$("bext").innerHTML=`<div class="tg" style="margin-bottom:6px"><div class="t" style="background:${PAL[0]}"><span class="tl2">Paid in ${Y}</span><b>${usd2(xsum(p=>(p.at||p.due).startsWith(Y)))}</b><small>extra principal</small></div><div class="t" style="background:${PAL[3]}"><span class="tl2">All-time</span><b>${usd2(xsum(()=>true))}</b><small>extra principal</small></div></div>`+xb.map(b=>`<div class="ar" style="grid-template-columns:1fr auto"><div>${esc(b.name)}<small>${+b.extra>0?usd2(b.extra)+" extra per payment · "+usd2((+b.extra)*bper(b))+"/yr planned":"no extra planned"}</small></div><div class="tv xp">${usd2(xsum(p=>p.bill===b.id))}</div></div>`).join("");
 const hs=[...PAIDL].sort((a,b)=>(b.at||"")<(a.at||"")?-1:(b.at||"")>(a.at||"")?1:(b.due<a.due?-1:1)).slice(0,20);
-$("bhist").innerHTML=hs.length?hs.map(p=>`<div class="le"><div>✓ ${esc(p.name||"Bill")} · ${usd2(p.amt)}<div class="d">due ${fd(p.due)} · paid ${fd(p.at||p.due)}</div></div><button class="x" data-delpaid="${p.id}">${ARM==="y"+p.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Bills you mark paid show up here.</div>"}
+$("bhist").innerHTML=hs.length?hs.map(p=>`<div class="le"><div>✓ ${esc(p.name||"Bill")} · ${usd2(p.amt)}${+p.extra>0?` <span class="xp">+ ${usd2(p.extra)} extra principal</span>`:""}<div class="d">due ${fd(p.due)} · paid ${fd(p.at||p.due)}</div></div><button class="x" data-delpaid="${p.id}">${ARM==="y"+p.id?"Tap again":"✕"}</button></div>`).join(""):"<div class='mut sm'>Bills you mark paid show up here.</div>"}
 // Desktop-only greeting header (hidden on phones)
 function dhead(){const h=new Date().getHours(),n=A.filter(a=>done(a,D)).length,best=Math.max(0,...A.map(streak)),rk=A.filter(risk).length;
 $("dhi").textContent=(h<12?"Good morning":h<17?"Good afternoon":"Good evening")+", Cameron 👋";
@@ -483,11 +489,15 @@ if(t.id!=="rsb"&&ARM==="restore"){ARM=null;render()}
 if(t.id==="edit"){EDIT=!EDIT;ARM=null;OPEN=null;render()}
 else if(t.id==="bk")backup()
 else if(t.id==="bedit"){BE=!BE;ARM=null;render()}
-else if(d.bpay){const b=BL.find(x=>x.id===d.bpay);if(b)wr(async()=>{await C.paid.doc(b.id+"_"+d.due).set({bill:b.id,name:b.name,due:d.due,amt:bpay(b),at:today()});toast("Marked paid ✓")})}
+else if(d.bpay){const b=BL.find(x=>x.id===d.bpay);if(!b)return;
+if(+b.extra>0&&!d.ok){PAYX=PAYX===b.id?null:b.id;render();return}
+const ex=d.ok?Math.max(0,parseFloat(($("px_"+b.id)||{}).value)||0):0;PAYX=null;
+wr(async()=>{await C.paid.doc(b.id+"_"+d.due).set({bill:b.id,name:b.name,due:d.due,amt:bpay(b),...(ex>0?{extra:ex}:{}),at:today()});toast(ex>0?"Paid ✓ incl. "+usd2(ex)+" extra principal":"Marked paid ✓")})}
+else if(d.bpayx){PAYX=null;render()}
 else if(d.addbill){const name=$("nbn").value.trim(),amt=parseFloat($("nba").value),day=parseInt($("nbd").value),freq=$("nbf").value;
-const day2=parseInt($("nbd2").value);if(!name||!(amt>=0)||!(day>=1&&day<=31))return toast("Enter name, amount and due day (1–31)");
+const day2=parseInt($("nbd2").value),extra=parseFloat($("nbx").value)||0;if(!name||!(amt>=0)||!(day>=1&&day<=31))return toast("Enter name, amount and due day (1–31)");
 if(freq==="twice"&&!(day2>=1&&day2<=31&&day2!==day))return toast("Enter a different 2nd day (1–31)");
-wr(async()=>{await C.bill.doc("b"+uid()).set({name,amt,freq,day,...(freq==="twice"?{day2}:{}),month:freq==="yearly"?+$("nbm").value:0,cat:$("nbc").value,auto:$("nbauto").checked,since:today(),o:Date.now()});$("nbn").value=$("nba").value=$("nbd").value=$("nbd2").value="";$("nbauto").checked=false;toast("Bill added")})}
+wr(async()=>{await C.bill.doc("b"+uid()).set({name,amt,freq,day,...(freq==="twice"?{day2}:{}),...(extra>0?{extra}:{}),month:freq==="yearly"?+$("nbm").value:0,cat:$("nbc").value,auto:$("nbauto").checked,since:today(),o:Date.now()});$("nbn").value=$("nba").value=$("nbd").value=$("nbd2").value=$("nbx").value="";$("nbauto").checked=false;toast("Bill added")})}
 else if(d.delbill){const k="b"+d.delbill;if(ARM!==k){ARM=k;render();return}ARM=null;wr(()=>C.bill.doc(d.delbill).delete())}
 else if(d.delpaid){const k="y"+d.delpaid;if(ARM!==k){ARM=k;render();return}ARM=null;wr(()=>C.paid.doc(d.delpaid).delete())}
 else if(t.id==="remon")remOn()
@@ -533,6 +543,7 @@ else if(t.id==="mnote"){const x=MD[D]||{},v=t.value.trim();if(v!==(x.note||""))s
 else if(t.id==="nbf"){$("nbm").hidden=t.value!=="yearly";$("nbd2").hidden=t.value!=="twice";$("nba").placeholder=t.value==="twice"?"$ Per month":"$ Amount";$("nbd").placeholder=t.value==="twice"?"1st day":"Due day"}
 else if(d.bname){const v=t.value.trim();if(v)wr(()=>C.bill.doc(d.bname).update({name:v}))}
 else if(d.bamt){const v=parseFloat(t.value);if(v>=0)wr(()=>C.bill.doc(d.bamt).update({amt:v}))}
+else if(d.bextra){const v=parseFloat(t.value);wr(()=>C.bill.doc(d.bextra).update({extra:v>0?v:0}))}
 else if(d.bday2){const v=parseInt(t.value);if(v>=1&&v<=31)wr(()=>C.bill.doc(d.bday2).update({day2:v}))}
 else if(d.bday){const v=parseInt(t.value);if(v>=1&&v<=31)wr(()=>C.bill.doc(d.bday).update({day:v}))}
 else if(d.bfreq){const b=BL.find(x=>x.id===d.bfreq)||{};wr(()=>C.bill.doc(d.bfreq).update({freq:t.value,month:t.value==="yearly"?(new Date().getMonth()+1):0,...(t.value==="twice"&&!b.day2?{day2:(+b.day||1)<=15?Math.min(31,(+b.day||1)+14):Math.max(1,(+b.day||1)-14)}:{})}))}

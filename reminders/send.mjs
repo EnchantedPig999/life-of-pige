@@ -99,7 +99,7 @@ const names = risk.map(x => x.a.name);
 if (risk.length === 1) msgs.push({ title: `🔥 ${names[0]} streak ends today`, body: "Tap to keep it going.", url: SITE, tag: "streak" });
 else if (risk.length) msgs.push({ title: `🔥 ${risk.length} streaks end today`, body: two(names) + ". Tap to keep them going.", url: SITE, tag: "streak" });
 const over = due.filter(x => x.d < TODAY);
-if (due.length === 1) { const { b, d } = due[0]; msgs.push(d < TODAY ? { title: `⚠️ ${b.name} is overdue`, body: `${usd(bpay(b))} · Tap to mark it paid.`, url: SITE, tag: "bill" } : { title: `💵 ${b.name} due ${when(d)}`, body: `${usd(bpay(b))} · Tap to mark it paid.`, url: SITE, tag: "bill" }); }
+if (due.length === 1) { const { b, d } = due[0]; msgs.push(d < TODAY ? { title: `⚠️ ${b.name} is overdue`, body: `${usd(bpay(b))}${+b.extra > 0 ? ` + ${usd(b.extra)} extra` : ""} · Tap to mark it paid.`, url: SITE, tag: "bill" } : { title: `💵 ${b.name} due ${when(d)}`, body: `${usd(bpay(b))}${+b.extra > 0 ? ` + ${usd(b.extra)} extra` : ""} · Tap to mark it paid.`, url: SITE, tag: "bill" }); }
 else if (due.length) msgs.push({ title: over.length ? `⚠️ ${due.length} bills need paying` : `💵 ${due.length} bills due soon`, body: two(due.map(x => x.b.name)) + ".", url: SITE, tag: "bill" });
 if (!msgs.length && FORCE) msgs.push({ title: "🐷 Reminders are working", body: "This is a test. You'll get these when a streak is about to end or a bill is due.", url: SITE, tag: "test" });
 if (!msgs.length) { console.log("No streaks at risk and no bills due."); await patch("push", "main", { lastSent: TODAY }); process.exit(0); }
