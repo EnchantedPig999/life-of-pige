@@ -79,10 +79,16 @@ const bdue = (b, y, m) => `${y}-${z2(m)}-${z2(Math.min(+b.day || 1, dim(y, m)))}
 function bcyc(b, from, to) {
   const o = [];
   if (b.freq === "yearly") { for (let y = +from.slice(0, 4); y <= +to.slice(0, 4); y++) { const d = bdue(b, y, +b.month || 1); if (d >= from && d <= to) o.push(d) } return o }
+  // "every": due every N months counting from b.start ("YYYY-MM")
+  const N = b.freq === "every" ? Math.max(1, +b.every || 3) : 1, [sy, sm] = (b.start || "2000-01").split("-").map(Number);
   let [y, m] = from.split("-").map(Number);
   for (let i = 0; i < 600; i++) {
-    const ds = [...new Set([bdue(b, y, m), ...(b.freq === "twice" ? [bdue({ day: b.day2 || 15 }, y, m)] : [])])].sort();
-    if (ds[0] > to) break; ds.forEach(d => { if (d >= from && d <= to) o.push(d) }); if (++m > 12) { m = 1; y++ }
+    const k = (y * 12 + m) - (sy * 12 + sm);
+    if (N === 1 || (k >= 0 && k % N === 0)) {
+      const ds = [...new Set([bdue(b, y, m), ...(b.freq === "twice" ? [bdue({ day: b.day2 || 15 }, y, m)] : [])])].sort();
+      if (ds[0] > to) break; ds.forEach(d => { if (d >= from && d <= to) o.push(d) });
+    } else if (bdue(b, y, m) > to) break;
+    if (++m > 12) { m = 1; y++ }
   }
   return o;
 }
