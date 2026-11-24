@@ -50,7 +50,7 @@ Old `events` collection from the XP version is unused. The app seeds defaults on
 - Manual test: Actions → Streak reminders → Run workflow (force = sends a test notification even if nothing is at risk)
 - A keep-alive step re-enables the workflow each run so GitHub doesn't pause it after 60 days
 
-## Views (bottom tab bar `#bnav`: Today | Trends | PRs | Recap | Bills | Finance; `VIEW` holds the current one)
+## Views (bottom tab bar `#bnav`: Today | Trends | PRs | Recap | Bills | Networth; `VIEW` holds the current one)
 The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.pg`). Footer (signed in as, Back up, Restore, Sign out) sits under every tab.
 
 **Today**
@@ -88,9 +88,9 @@ The "LIFE OF PIGE" header shows only on Today; other tabs have a page title (`.p
 - Next due = earliest unpaid cycle on or after `since`; autopay cycles before today count as paid. Paying writes `paid/<billId>_<due>` and the bill rolls to the next cycle
 - "Yearly cost" grouped by category (categories sorted by yearly total with a subtotal header, bills by cost), bars colored by category, with grand total. "Paid history" (last 20, ✕ to undo, two taps)
 
-**Finance** (hidden behind a 🔒 Unhide button by default; re-locks when leaving the tab or reloading. This is not real security, no passcode)
+**Networth** (tab labeled "Networth", internal view id still `fin`; hidden behind a 🔒 Unhide button by default; re-locks when leaving the tab or reloading. This is not real security, no passcode)
 - Accounts are Assets or Debts. Monthly checkpoint: enter each account's balance for a chosen month; empty boxes keep the previous value (carry-forward)
-- Net worth tile (big), Assets and Debts tiles, line graph by month. 🔒 Hide button in the page header; the Finance tab icon shows 🔒/🔓. Savings goals link to an asset account or a manual amount, with progress bars (gold at 100%). Amounts are always shown once unhidden
+- Net worth tile (big), Assets and Debts tiles, line graph by month. 🔒 Hide button in the page header; the Networth tab icon shows 🔒/🔓. Savings goals link to an asset account or a manual amount, with progress bars (gold at 100%). Amounts are always shown once unhidden
 
 ## Rules and decisions (keep these)
 - **Best streak:** longest chain ever under the same GAP rule (past chains count first to last done day; the current one counts through today)
